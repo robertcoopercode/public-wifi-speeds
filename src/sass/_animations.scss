@@ -1,0 +1,14 @@
+@keyframes fadeForm {
+  from {opacity: 0;}
+  to {opacity: 1;}
+}
+
+@keyframes slideEntry {
+  from {height: 0; opacity: 0}
+  to {height: 40px; opacity: 1}
+}
+
+@keyframes slideNote {
+  from {right: 40px; visibility: hidden;}
+  to {right: 6px; visibility: visible;}
+}

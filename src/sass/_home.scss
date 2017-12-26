@@ -1,0 +1,52 @@
+.home {
+  color: #ffffff;
+  width: 1200px;
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+.home__top-section {
+  display: flex;
+  margin-top: 60px;
+}
+
+.top-section__title {
+  font-size: 1.75rem;
+}
+
+.top-section__action-buttons {
+  margin-left: auto;
+}
+
+.top-section__action-button {
+  margin: 0 10px;
+
+  &:last-child {
+    margin-right: 0;
+  }
+}
+
+.home__logout-container {
+  margin-top: 20px;
+  text-align: right;
+}
+
+.home__city-selector {
+  margin-top: 60px;
+}
+
+.city-selector {
+  display: flex;
+  justify-content: center;
+}
+
+.city-selector__text {
+  font-size: 1.5rem;
+  margin-right: 50px;
+}
+
+.home__entries {
+  max-width: 1200px;
+  margin: auto;
+  margin-top: 20px;
+}

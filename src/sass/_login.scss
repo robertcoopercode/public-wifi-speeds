@@ -1,0 +1,32 @@
+.login {
+  align-self: center;
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.login__text {
+  font-size: 1.5rem;
+  color: #ffffff;
+}
+
+.login__authentication-buttons {
+  margin: 1rem 0;
+}
+
+.login__buttons {
+  text-align: center;
+}
+
+.login__button {
+  margin-left: 5px;
+  margin-right: 5px;
+}
+
+.login__coffee {
+  width: 80px;
+  margin-top: 40px;
+  display: block;
+}
