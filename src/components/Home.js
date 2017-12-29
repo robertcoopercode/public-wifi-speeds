@@ -17,40 +17,24 @@ class Home extends Component {
             showNote: false,
             showStats: false,
             showDropdown: false,
+            sortField: "location",
+            sortAscending: true,
             city: 'kingston',
         }
     }
 
     componentDidMount() {
         document.title = "Wifi Speeds - " + this.state.city[0].toUpperCase() + this.state.city.slice(1)
-        this.fetchEnries(this.state.city)
+        this.fetchEnries(this.state.city, "location")
+        // document.getElementsByTagName('body')[0].style.position = 'fixed'
     }
 
-    sort = (field, ascending) => {
-        const databaseReference = firebase.database().ref('/entries/' + this.state.city).orderByChild(field);
-        databaseReference.on('value', snapshot => {
-            /* Update React state when message is added at Firebase Database */
-            let entries = [];
-            if (!!snapshot.val()) {
-                snapshot.forEach(function(child) {
-                    let entry = {
-                        location: child.val().location,
-                        date: child.val().date,
-                        download: child.val().download,
-                        upload: child.val().upload,
-                        ping: child.val().ping,
-                        id: child.key,
-                        note: child.val().note,
-                        uid: child.val().uid
-                    };
-                    entries.push(entry);
-                })
-            }
-            if (!ascending) {
-                entries.reverse();
-            }
-            this.setState({entries: entries});
-        })
+    componentDidUpdate() {
+        if (this.state.showForm) {
+            document.getElementsByTagName('body')[0].style.position = 'fixed'
+        } else {
+            document.getElementsByTagName('body')[0].style.position = 'relative'
+        }
     }
 
     showNote = (note) => {
@@ -64,9 +48,51 @@ class Home extends Component {
         })
     }
 
-    fetchEnries = (city) => {
+    sanitizeInputs = (location, date, timestamp, download, upload, ping, note, uid) => {
+        return {
+            location: location,
+            date: date,
+            timestamp: timestamp,
+            download: parseFloat(parseFloat(download).toFixed(2)),
+            upload: parseFloat(parseFloat(upload).toFixed(2)),
+            ping: parseFloat(parseFloat(ping).toFixed(2)),
+            note: note,
+            uid: uid
+        }
+    }
+
+    validateInputs = (location, download, upload, ping) => {
+        let errors = {};
+        if (location.length > 100) {
+            errors.location = "Invalid input"
+        }
+        if (isNaN(parseFloat(download)) ||
+            (download.toString().split(".")[1]
+                && download.toString().split(".")[1].length > 2) ||
+            (parseFloat(download) > 1000)
+        ) {
+            errors.download = "Invalid input"
+        }
+        if (isNaN(parseFloat(upload)) ||
+            (upload.toString().split(".")[1]
+                && upload.toString().split(".")[1].length > 2) ||
+            (parseFloat(upload) > 1000)
+        ) {
+            errors.upload = "Invalid input"
+        }
+        if (isNaN(parseFloat(ping)) ||
+            (ping.toString().split(".")[1]
+                && ping.toString().split(".")[1].length > 2) ||
+            (parseFloat(ping) > 1000)
+        ) {
+            errors.ping = "Invalid input"
+        }
+        return errors;
+    }
+
+    fetchEnries = (city = this.state.city, sortField = this.state.sortField, sortAscending = this.state.sortAscending) => {
         /* Create reference to entries in Firebase Database */
-        const databaseReference = firebase.database().ref('/entries/' + city).orderByChild('location');
+        const databaseReference = firebase.database().ref('/entries/' + city).orderByChild(sortField);
         databaseReference.on('value', snapshot => {
             /* Update React state when message is added at Firebase Database */
             let entries = [];
@@ -85,14 +111,20 @@ class Home extends Component {
                     entries.push(entry);
                 })
             }
-            // console.log(entries.reverse());
-            this.setState({entries: entries});
+            if (!sortAscending) {
+                entries.reverse();
+            }
+            this.setState({
+                entries: entries,
+                sortField: sortField,
+                sortAscending: sortAscending
+            });
         })
     }
 
     selectCity = (name) => {
         document.title = "Wifi Speeds - " + name[0].toUpperCase() + name.slice(1)
-        this.fetchEnries(name)
+        this.fetchEnries(name, undefined, undefined)
         this.setState({city: name})
     }
 
@@ -125,8 +157,10 @@ class Home extends Component {
                 <EntriesTable
                     entries={this.state.entries}
                     city={this.state.city}
-                    sort={this.sort}
+                    fetchEnries={this.fetchEnries}
                     showNote={this.showNote}
+                    sanitizeInputs={this.sanitizeInputs}
+                    validateInputs={this.validateInputs}
                 />
 
                 {/* Add Entry Form Modal */}
@@ -138,7 +172,12 @@ class Home extends Component {
                                 <p>Add New Entry</p>
                             </div>
                             <div className="message-body">
-                                <AddEntryForm hideForm={() => this.setState({showForm: false})} city={this.state.city}/>
+                                <AddEntryForm
+                                    hideForm={() => this.setState({showForm: false})}
+                                    city={this.state.city}
+                                    sanitizeInputs={this.sanitizeInputs}
+                                    validateInputs={this.validateInputs}
+                                />
                             </div>
                         </article>
                     </div>
@@ -160,8 +199,8 @@ class Home extends Component {
                 <div className={"modal modal--note" + (this.state.showNote ? " is-active" : "")}>
                     <div className="modal-background" onClick={() => this.setState({showNote: false})}/>
                     <div className="modal-content">
-                        <article class="message">
-                            <div class="message-body">
+                        <article className="message">
+                            <div className="message-body">
                                 {this.state.note}
                             </div>
                         </article>

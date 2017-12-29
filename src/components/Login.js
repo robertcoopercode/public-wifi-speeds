@@ -36,7 +36,7 @@ class Login extends Component {
             <div className="login content">
                 <p className={"login__text"}>Login with one of the following providers.</p>
                 {this.state.error ?
-                    <article className="message is-danger">
+                    <article className="login__error message is-danger">
                         <div className="message-body">
                             {this.state.error}
                         </div>

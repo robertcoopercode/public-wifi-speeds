@@ -7,12 +7,26 @@ class AddEntryForm extends Component {
         super(props);
         this.INITIAL_STATE = {
             location: "",
-            download: null,
-            upload: null,
-            ping: null,
-            note: null
+            download: "",
+            upload: "",
+            ping: "",
+            note: "",
+            errors: null
         }
         this.state = this.INITIAL_STATE
+    }
+    componentDidMount = () => {
+        // Prevent default form validation bubbles from appearing
+        this.entryForm.addEventListener("invalid", function (event) {
+            event.preventDefault()
+        }, true)
+    }
+    componentDidUpdate = () => {
+        fetch('https://maps.googleapis.com/maps/api/place/textsearch/json?query=restaurants+in+Sydney&key=AIzaSyBTaH1qBsN1jYwNApUGOE4tDIfPQlew-0U').then(function(response) {
+            console.log(response)
+        }).catch(function(err) {
+            console.log(err)
+        });
     }
     getCurrentDate = () => {
         let today = new Date();
@@ -29,32 +43,52 @@ class AddEntryForm extends Component {
         let date = dd + '/' + mm + '/' + yyyy;
         return date;
     }
+    checkValidation = () => {
+        const invalidFields = this.entryForm.querySelectorAll(":invalid")
+        let errorMessages = {};
+
+        for (let i = 0; i < invalidFields.length; i++) {
+            const fieldName = invalidFields[i].dataset.name
+            errorMessages[fieldName] = invalidFields[i].validationMessage
+        }
+        // If there are errors, give focus to the first invalid field
+        if (invalidFields.length > 0) {
+            invalidFields[0].focus();
+            this.setState({
+                errors: errorMessages
+            })
+        }
+    }
     onSubmit = (e) => {
         e.preventDefault();
-        firebase.database().ref().child('/entries/' + this.props.city).push({
-            location: this.state.location,
-            date: this.getCurrentDate(),
-            timestamp: Date.now(),
-            download: parseFloat(this.state.download),
-            upload: parseFloat(this.state.upload),
-            ping: parseFloat(this.state.ping),
-            note: this.state.note,
-            uid: this.context.authUser.uid
-        });
-        this.setState(this.INITIAL_STATE);
-        this.entryForm.reset();
-        this.props.hideForm();
+        const errors = this.props.validateInputs(this.state.location, this.state.download, this.state.upload, this.state.ping)
+        if (Object.keys(errors).length === 0) {
+            firebase.database().ref().child('/entries/' + this.props.city).push(
+                // Returns an object
+                this.props.sanitizeInputs(
+                    this.state.location,
+                    this.getCurrentDate(),
+                    Date.now(),
+                    this.state.download,
+                    this.state.upload,
+                    this.state.ping,
+                    this.state.note,
+                    this.context.authUser.uid
+                )
+            )
+            this.setState(this.INITIAL_STATE);
+            this.entryForm.reset();
+            // Trigger a change event on all form inputs (fixes a bug where the input doesn't detect a change in the input when submitting a second consecutive entry.
+            this.entryForm.querySelectorAll('.input, .textarea').forEach((value) => {
+                value.dispatchEvent(new Event('change', { 'bubbles': true }))
+            })
+            this.props.hideForm();
+        } else {
+            this.setState({
+                errors: errors
+            })
+        }
     }
-    // onEntryAdd = (location, download, upload, ping, note) => {
-    //     firebase.database().ref().child('/entries').push({
-    //         location: location,
-    //         date: this.getCurrentDate(),
-    //         download: parseFloat(download),
-    //         upload: parseFloat(upload),
-    //         ping: parseFloat(ping),
-    //         note: note
-    //     });
-    // }
 
     render() {
         return (
@@ -66,18 +100,31 @@ class AddEntryForm extends Component {
                     <label className="label">Location</label>
                     <div className="control">
                         <input
-                            className="input"
+                            className={"input" +
+                            (this.state.errors && this.state.errors.location
+                                ? " is-danger"
+                                : "")}
+                            data-name="location"
                             type="text"
                             placeholder="Tim Hortons on Princess and MacDonnell"
+                            maxLength="150"
                             onChange={(e) => this.setState({location: e.target.value})}
                             required/>
                     </div>
+                    {this.state.errors && this.state.errors.location
+                        ? <p className="help is-danger">{this.state.errors.location}</p>
+                        : null
+                    }
                 </div>
                 <div className="form__number-group field is-grouped is-grouped-centered is-grouped-multiline">
                     <div className="control form__number-input">
                         <label className="label">Download (Mbps)</label>
                         <input
-                            className="input"
+                            className={"input" +
+                            (this.state.errors && this.state.errors.download
+                                ? " is-danger"
+                                : "")}
+                            data-name="download"
                             type="number"
                             min="0"
                             max="1000"
@@ -85,11 +132,19 @@ class AddEntryForm extends Component {
                             placeholder="12"
                             onChange={(e) => this.setState({download: e.target.value})}
                             required/>
+                        {this.state.errors && this.state.errors.download
+                            ? <p className="help is-danger">{this.state.errors.download}</p>
+                            : null
+                        }
                     </div>
                     <div className="control form__number-input">
                         <label className="label">Upload (Mbps)</label>
                         <input
-                            className="input"
+                            className={"input" +
+                            (this.state.errors && this.state.errors.upload
+                                ? " is-danger"
+                                : "")}
+                            data-name="upload"
                             type="number"
                             min="0"
                             max="1000"
@@ -97,11 +152,19 @@ class AddEntryForm extends Component {
                             placeholder="12"
                             onChange={(e) => this.setState({upload: e.target.value})}
                             required/>
+                        {this.state.errors && this.state.errors.upload
+                            ? <p className="help is-danger">{this.state.errors.upload}</p>
+                            : null
+                        }
                     </div>
                     <div className="control form__number-input">
                         <label className="label">Ping (ms)</label>
                         <input
-                            className="input"
+                            className={"input" +
+                            (this.state.errors && this.state.errors.ping
+                                ? " is-danger"
+                                : "")}
+                            data-name="ping"
                             type="number"
                             min="0"
                             max="500"
@@ -109,24 +172,39 @@ class AddEntryForm extends Component {
                             placeholder="12"
                             onChange={(e) => this.setState({ping: e.target.value})}
                             required/>
+                        {this.state.errors && this.state.errors.ping
+                            ? <p className="help is-danger">{this.state.errors.ping}</p>
+                            : null
+                        }
                     </div>
                 </div>
                 <div className="field">
-                    <label className="label">Notes</label>
+                    <label className="label">Note</label>
                     <div className="control">
                   <textarea
-                      className="textarea"
+                      className={"textarea" +
+                      (this.state.errors && this.state.errors.note
+                          ? " is-danger"
+                          : "")}
+                      data-name="note"
                       type="textarea"
                       placeholder="The food was great but the wifi was slow :'("
                       onChange={(e) => this.setState({note: e.target.value})}
                       maxLength="1000"
                       required/>
+                        {this.state.errors && this.state.errors.note
+                            ? <p className="help is-danger">{this.state.errors.note}</p>
+                            : null
+                        }
                     </div>
                 </div>
                 <div className="field-body">
                     <div className="field is-grouped is-grouped-centered">
                         <div className="control">
-                            <button className="button is-success">
+                            <button
+                                onClick={this.checkValidation}
+                                type="submit"
+                                className="button is-success">
                                 Submit
                             </button>
                         </div>

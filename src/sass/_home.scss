@@ -3,32 +3,64 @@
   width: 1200px;
   max-width: 100%;
   margin: 0 auto;
-}
-
-.home__top-section {
-  display: flex;
-  margin-top: 60px;
-}
-
-.top-section__title {
-  font-size: 1.75rem;
-}
-
-.top-section__action-buttons {
-  margin-left: auto;
-}
-
-.top-section__action-button {
-  margin: 0 10px;
-
-  &:last-child {
-    margin-right: 0;
-  }
+  padding: 0 20px 40px;
 }
 
 .home__logout-container {
   margin-top: 20px;
   text-align: right;
+
+  @media (max-width: 700px) {
+    text-align: center;
+  }
+}
+
+.home__top-section {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 45px;
+  justify-content: space-evenly;
+  align-items: center;
+
+  @media (max-width: 700px) {
+    margin-top: 10px;
+  }
+}
+
+.top-section__title {
+  margin: 10px 0;
+  font-size: 1.5rem;
+  text-align: center;
+
+  @include respond-to($small) {
+    font-size: 1.75rem;
+    white-space: nowrap;
+  }
+}
+
+.top-section__action-buttons {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
+
+  @include respond-to($small) {
+    flex-direction: row;
+    flex-wrap: nowrap;
+  }
+}
+
+.top-section__action-button {
+  margin: 5px 10px;
+
+  @include respond-to($small) {
+    &:first-child {
+      margin-left: 0;
+    }
+    &:last-child {
+      margin-right: 0;
+    }
+  }
 }
 
 .home__city-selector {

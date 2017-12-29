@@ -5,11 +5,20 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  padding: 0 20px;
+  width: 100%;
 }
 
 .login__text {
   font-size: 1.5rem;
   color: #ffffff;
+  text-align: center;
+}
+
+.login__error {
+  width: 600px;
+  max-width: 100%;
+  margin-bottom: 0 !important;
 }
 
 .login__authentication-buttons {

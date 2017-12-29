@@ -1,5 +1,6 @@
 .entries__table {
-  margin-top: 20px !important;
+  margin: 0 !important;
+  margin-top: 15px !important;
 }
 
 .table {
@@ -18,7 +19,7 @@
   // .Table-header
   &-header {
     display: none;
-    @media (min-width: $md) {
+    @include respond-to ($medium) {
       font-weight: 700;
       background-color: $dark-color;
     }
@@ -27,9 +28,16 @@
   &-row {
     position: relative;
     width: 100%;
+    border: 2px solid black;
+    border-bottom: none;
     &:nth-of-type(even) { background-color: $dark-color; }
     &:nth-of-type(odd) { background-color: $light-color; }
     &:nth-of-type(1){ background-color: #ffdd57; }
+    &--form {
+      display: flex;
+      flex-wrap: nowrap;
+      width: 100%;
+    }
     &-overlay{
       display: none;
     }
@@ -49,7 +57,8 @@
         background: rgba(0, 0, 0, 0.59);
       }
     }
-    @media (min-width: $md) {
+    @include respond-to ($medium) {
+        border: none;
         display: flex;
         flex-flow: row nowrap;
         &:nth-of-type(even) { background-color: $light-color; }
@@ -57,35 +66,89 @@
         &:nth-of-type(1){ background-color: #ffdd57;}
     }
   }
+  &-cell-text {
+    padding: 0.5em;
+    width: 100%;
+  }
   &-cell {
     display: flex;
-    flex-flow: row nowrap;
-    flex-grow: 1;
-    flex-basis: 0;
-    padding: 0.5em;
+    position: relative;
+    flex-wrap: nowrap;
+    flex-direction: row;
+    padding: 0 !important;
     word-break: break-word;
     line-height: 1.5;
+    border-bottom: 1px solid black;
+
     &[data-header="Location"] {
       flex-grow: 3;
     }
+    &--error {
+      display: none;
+
+      @include respond-to($medium) {
+        top: -32px;
+        font-size: 0.75rem;
+        position: absolute;
+        border-radius: 5px 5px 0 0;
+        height: 30px;
+        background-color: #FF385E;
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        width: 98%;
+        left: 1%;
+        justify-content: center;
+        margin-top: 0;
+      }
+    }
+    &--edit {
+      padding: 0 !important;
+      background-color: rgba(0, 209, 178, 0.22);
+    }
+    &--date {
+      padding: 0.5em;
+      width: 100%;
+    }
+    &--danger {
+      background-color: rgba(255, 56, 96, 0.25);
+    }
+    &--danger.table-cell--focused {
+      box-shadow: 0 0 0 0.125em rgba(255, 56, 96, 0.25)
+    }
     &--input {
-      //background: none;
-      //border: none;
-      padding: 0;
+      background: none;
+      border: none !important;
+      padding: 0.5em;
       font-size: 1rem;
       width: 100%;
-      background-color: rgba(0, 209, 178, 0.22);
-      border-color: #00d1b2 !important;
     }
     &:before {
       content: attr(data-header);
-      width: 30%;
+      width: 40%;
       font-weight: 700;
+      display: flex;
+      align-items: center;
+      padding: 10px;
+      background-color: #ffdd57;
+
+      @include respond-to ($small) {
+        width: 30%;
+      }
     }
-    @media (min-width: $md) {
+    @include respond-to ($medium) {
       border: 1px solid #2D365B;
       padding: 0.5em;
+      flex-grow: 1;
+      flex-basis: 0;
       &:before { content: none; }
+    }
+  }
+  &-cell-header-text {
+    padding: 0.5em;
+    width: 100%;
+    &:hover {
+      cursor: pointer;
     }
   }
   &-save{
@@ -103,6 +166,14 @@
   }
 }
 
+.table-row--form {
+  flex-direction: column;
+
+  @include respond-to($medium) {
+    flex-direction: row;
+  }
+}
+
 .form__number-group {
   justify-content: space-between !important;
 }
@@ -114,8 +185,4 @@
 
 .dropdown--city {
   display: inline-block;
-}
-
-.table-header-sort:hover {
-  cursor: pointer;
 }

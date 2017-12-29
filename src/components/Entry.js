@@ -6,7 +6,8 @@ class Entry extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            showOverlay: true
+            showOverlay: true,
+            errors: null
         }
     }
 
@@ -25,16 +26,52 @@ class Entry extends Component {
         firebase.database().ref('/entries/' + this.props.city + '/' + id).remove()
     }
 
-    updateItem = (id) => {
-        firebase.database().ref('/entries/' + this.props.city + '/' + id).update({
-            location: this.state.location,
-            date: this.getCurrentDate(),
-            download: parseFloat(this.state.download),
-            upload: parseFloat(this.state.upload),
-            ping: parseFloat(this.state.ping),
-            note: this.state.note
-        })
-        this.setState({showOverlay: true})
+    // First level of validation of form inputs
+    checkValidation = () => {
+        // Prevent default form validation bubbles from appearing
+        this.editForm.addEventListener("invalid", function (event) {
+            event.preventDefault()
+        }, true)
+        const invalidFields = this.editForm.querySelectorAll(":invalid")
+        let errorMessages = {};
+
+        for (let i = 0; i < invalidFields.length; i++) {
+            const fieldName = invalidFields[i].dataset.name
+            errorMessages[fieldName] = invalidFields[i].validationMessage
+        }
+        // If there are errors, give focus to the first invalid field
+        if (invalidFields.length > 0) {
+            invalidFields[0].focus();
+            this.setState({
+                errors: errorMessages
+            })
+        }
+    }
+
+    updateItem = (e, id) => {
+        e.preventDefault();
+        // Second level of validation before submitting data to the database
+        const errors = this.props.validateInputs(this.state.location, this.state.download, this.state.upload, this.state.ping);
+        if (Object.keys(errors).length === 0) {
+            firebase.database().ref('/entries/' + this.props.city + '/' + id).update(
+                // Returns object
+                this.props.sanitizeInputs(
+                    this.state.location,
+                    this.getCurrentDate(),
+                    Date.now(),
+                    this.state.download,
+                    this.state.upload,
+                    this.state.ping,
+                    this.state.note,
+                    this.context.authUser.uid
+                )
+            )
+            this.setState({showOverlay: true, errors: null})
+        } else {
+            this.setState({
+                errors: errors
+            })
+        }
     }
 
     getCurrentDate = () => {
@@ -59,82 +96,150 @@ class Entry extends Component {
                 {this.state.showOverlay
                     ?
                     <React.Fragment>
-                        <span className={"table-cell"} data-header="Date">
-                        {this.props.entry.date}
-                    </span>
-                        <span className={"table-cell"} data-header="Location">
-                {this.props.entry.location}
-                    </span>
-                        <span className={"table-cell"} data-header="Download (Mbps)">{this.props.entry.download}</span>
-                        <span className={"table-cell"} data-header="Upload (Mbps)">{this.props.entry.upload}</span>
-                        <span className={"table-cell"} data-header="Ping (ms)">{this.props.entry.ping}</span>
+                        <div className={"table-cell"} data-header="Date">
+                            <span className={"table-cell-text"}>
+                                {this.props.entry.date}
+                            </span>
+                        </div>
+                        <div className={"table-cell"} data-header="Location">
+                            <span className={"table-cell-text"}>
+                                {this.props.entry.location}
+                            </span>
+                        </div>
+                        <div className={"table-cell"} data-header="Download (Mbps)">
+                            <span className={"table-cell-text"}>
+                                {this.props.entry.download}
+                            </span>
+                        </div>
+                        <div className={"table-cell"} data-header="Upload (Mbps)">
+                            <span className={"table-cell-text"}>
+                                {this.props.entry.upload}
+                            </span>
+                        </div>
+                        <div className={"table-cell"} data-header="Ping (ms)">
+                            <span className={"table-cell-text"}>
+                                {this.props.entry.ping}
+                            </span>
+                        </div>
                     </React.Fragment>
                     :
-                    <React.Fragment>
-                        <span className={"table-cell"} data-header="Date">
-                        {this.props.entry.date}
-                    </span>
-                        <input className={"table-cell table-cell--input"}
-                               data-header="Location"
-                               type={"text"}
-                               value={this.state.location}
-                               onChange={(e) => this.setState({location: e.target.value})}/>
-                        <input className={"table-cell table-cell--input"}
-                               data-header="Download"
-                               type={"number"}
-                               min="0"
-                               max="1000"
-                               step="0.01"
-                               value={this.state.download}
-                               onChange={(e) => this.setState({download: e.target.value})}/>
-                        <input className={"table-cell table-cell--input"}
-                               data-header="Upload"
-                               type={"number"}
-                               min="0"
-                               max="1000"
-                               step="0.01"
-                               value={this.state.upload}
-                               onChange={(e) => this.setState({upload: e.target.value})}/>
-                        <input className={"table-cell table-cell--input"}
-                               data-header="Ping"
-                               type={"number"}
-                               min="0"
-                               max="500"
-                               step="0.01"
-                               value={this.state.ping}
-                               onChange={(e) => this.setState({ping: e.target.value})}/>
+                    <form
+                        className={"table-row--form"}
+                        ref={(element) => this.editForm = element}
+                        onSubmit={(e) => this.updateItem(e, this.props.entry.id)}>
+                        <div className={"table-cell table-cell--edit-date"} data-header="Date">
+                            <span className={"table-cell--date"}>
+                                {this.props.entry.date}
+                            </span>
+                        </div>
+                        <div className={"table-cell" +
+                        (this.state.errors && this.state.errors.location
+                                ? " table-cell--danger"
+                                : " table-cell--edit"
+                        )}
+                             data-header="Location">
+                            {this.state.errors && this.state.errors.location ?
+                                <p className="table-cell--error">Invalid</p>
+                                : null
+                            }
+                            <input className={"table-cell--input"}
+                                   data-name="location"
+                                   maxLength="100"
+                                   type={"text"}
+                                   value={this.state.location}
+                                   onChange={(e) => this.setState({location: e.target.value})}>
+                            </input>
+                        </div>
+                        <div className={"table-cell" +
+                        (this.state.errors && this.state.errors.download
+                                ? " table-cell--danger"
+                                : " table-cell--edit"
+                        )}
+                             data-header="Download">
+                            {this.state.errors && this.state.errors.download ?
+                                <p className="table-cell--error">Invalid</p>
+                                : null
+                            }
+                            <input className={"table-cell--input"}
+                                   data-name="download"
+                                   type={"number"}
+                                   min="0"
+                                   max="1000"
+                                   step="0.01"
+                                   value={this.state.download}
+                                   onChange={(e) => this.setState({download: e.target.value})}/>
+                        </div>
+                        <div className={"table-cell" +
+                        (this.state.errors && this.state.errors.upload
+                                ? " table-cell--danger"
+                                : " table-cell--edit"
+                        )}
+                             data-header="Upload">
+                            {this.state.errors && this.state.errors.upload ?
+                                <p className="table-cell--error">Invalid</p>
+                                : null
+                            }
+                            <input className={"table-cell--input"}
+                                   data-name="upload"
+                                   type="number"
+                                   min="0"
+                                   max="1000"
+                                   step="0.01"
+                                   value={this.state.upload}
+                                   onChange={(e) => this.setState({upload: e.target.value})}/>
+                        </div>
+                        <div className={"table-cell" +
+                        (this.state.errors && this.state.errors.ping
+                                ? " table-cell--danger"
+                                : " table-cell--edit"
+                        )}
+                             data-header="Ping">
+                            {this.state.errors && this.state.errors.ping ?
+                                <p className="table-cell--error">Invalid</p>
+                                : null
+                            }
+                            <input className={"table-cell--input"}
+                                   data-name="ping"
+                                   type={"number"}
+                                   min="0"
+                                   max="1000"
+                                   step="0.01"
+                                   value={this.state.ping}
+                                   onChange={(e) => this.setState({ping: e.target.value})}/>
+                        </div>
                         <div className={"table-save-container"}>
                             <button
                                 className={"table-save button is-small is-success"}
-                                onClick={() => this.updateItem(this.props.entry.id)}
+                                onClick={this.checkValidation}
                             >Save
                             </button>
                         </div>
-                    </React.Fragment>
+                    </form>
                 }
-
-                {this.context.authUser.uid === this.props.entry.uid && this.state.showOverlay
+                {this.state.showOverlay
                     ? <div className="table-row-overlay">
                         <button
                             className={"table-row-button button is-small is-info"}
                             onClick={() => this.props.showNote(this.props.entry.note)}
-                        >Note</button>
-                        <button
-                            className="table-row-button button is-small is-primary"
-                            onClick={() => this.setState({showOverlay: false})}
-                        >Edit
+                        >Note
                         </button>
-                        <button className="table-row-button button is-small is-danger"
-                                onClick={() => this.deleteItem(this.props.entry.id)}>Delete
-                        </button>
+                        {this.context.authUser.uid === this.props.entry.uid
+                            ? <React.Fragment>
+                                <button
+                                    className="table-row-button button is-small is-primary"
+                                    onClick={() => this.setState({showOverlay: false})}
+                                >Edit
+                                </button>
+                                < button className="table-row-button button is-small is-danger"
+                                         onClick={() => this.deleteItem(this.props.entry.id)}>Delete
+                                </button>
+                            </React.Fragment>
+                            : null
+                        }
                     </div>
-                    : <div className="table-row-overlay">
-                        <button
-                            className={"table-row-button button is-small is-info"}
-                            onClick={() => this.props.showNote(this.props.entry.note)}
-                        >Note</button>
-                    </div>
+                    : null
                 }
+
             </div>
         )
     }
