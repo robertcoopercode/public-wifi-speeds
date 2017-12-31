@@ -101,8 +101,8 @@ class Home extends Component {
         ) {
             errors.ping = "Invalid input"
         }
-        if (note.length > 100 || (note.length > 0 && note.trim().length === 0)) {
-            errors.note = "Invalid input"
+        if (note.length > 1000) {
+            errors.note = "Notes have to be under 1000 characters."
         }
         return errors;
     }
