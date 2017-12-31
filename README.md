@@ -1,17 +1,30 @@
-# React Wifi Entries
-A React App (bootstrapped using [Create React App](https://github.com/facebookincubator/create-react-app)) built to collect wifi speed tests for various coffee shops.
+# Public Wifi Entries
+An application used to record wifi speeds at public locations. Built with React on the front end and Firebase for the database, authentication, and hosting.
 
-## Screenshots
-The main app looks like this:
 ![main application screenshot](/screenshots/main.png)
-The stats modal window looks like so:
-![stats modal screenshot](/screenshots/stats.png)
+
 ## Local Development
-If you'd like to run this project on your local machine run the following commands after you've cloned the repository to your local machine:
-```bash
-yarn install
-yarn start
-```
-A browser window show automatically open at `http://localhost:3005/` where you should be able to view the app running.
+In the root project directory, install all the project dependencies:
+
+#### `yarn install`
+
+Next, you will need to rename the `.env.example` file to `.env` to have access to the required environment varibles. The environment variables allow the application to work with Firebase as well as use the Google Places API.
+ 
+Once that is complete, start the development server:
+
+#### `yarn start`
+
+The application should now be running on [http://localhost:3000/](http://localhost:3000/).
+
 ## Deployment
-The app is currently hosted on firebase at https://coffee-shop-wifi.firebaseapp.com/. To deploy the app make sure to run `yarn build` and then run `npm run deploy` and the firebase app should be updated.
+To deploy the application, first run the build command in the root project directory:
+
+#### `yarn build`
+
+Then, deploy the application to firebase:
+
+#### `firebase deploy`
+
+> Note: you need the production API values in your `.env` file to properly deploy the application to firebase
+
+The live app should be available at [https://publicwifispeeds.firebaseapp.com/](https://publicwifispeeds.firebaseapp.com/).
