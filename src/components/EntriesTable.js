@@ -7,22 +7,7 @@ class EntriesTable extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            ascTimestampOrder: false,
-            ascLocationOrder: false,
-            ascDownloadOrder: false,
-            ascUploadOrder: false,
-            ascPingOrder: false,
         }
-    }
-
-    handleSort = (field, direction) => {
-        const stateProperty = 'asc' + field[0].toUpperCase() + field.slice(1) + 'Order'
-        this.setState({[stateProperty]: !direction})
-        this.props.fetchEnries(undefined, field, direction);
-    }
-
-    deleteItem = (id) => {
-        firebase.database().ref('/entries/' + this.props.city + '/' + id).remove()
     }
 
     render() {
@@ -30,51 +15,51 @@ class EntriesTable extends Component {
             <div className={"table-row table-header"}>
                 <div className={"table-cell"} data-header="Date">
                     <span
-                        onClick={() => this.handleSort("timestamp", this.state.ascTimestampOrder)}
+                        onClick={() => this.props.handleSort("timestamp", this.props.sortOrder.timestamp)}
                         className={"table-cell-header-text"}>
                             Date
                         <span className="icon has-text-info">
-                          <i className={"fa fa-arrow-circle-" + (this.state.ascTimestampOrder ? "down" : "up")}/>
+                          <i className={"fa fa-arrow-circle-" + (this.props.sortOrder.timestamp ? "down" : "up")}/>
                         </span>
                     </span>
                 </div>
                 <div className={"table-cell"} data-header="Location">
                     <span
-                        onClick={() => this.handleSort("location", this.state.ascLocationOrder)}
+                        onClick={() => this.props.handleSort("location", this.props.sortOrder.location)}
                         className={"table-cell-header-text"}>
                             Location
                         <span className="icon has-text-info">
-                          <i className={"fa fa-arrow-circle-" + (this.state.ascLocationOrder ? "down" : "up")}/>
+                          <i className={"fa fa-arrow-circle-" + (this.props.sortOrder.location ? "down" : "up")}/>
                         </span>
                     </span>
                 </div>
                 <div className={"table-cell"} data-header="Download (Mbps)">
                     <span
-                        onClick={() => this.handleSort("download", this.state.ascDownloadOrder)}
+                        onClick={() => this.props.handleSort("download", this.props.sortOrder.download)}
                         className={"table-cell-header-text"}>
                             Download (Mbps)
                         <span className="icon has-text-info">
-                          <i className={"fa fa-arrow-circle-" + (this.state.ascDownloadOrder ? "down" : "up")}/>
+                          <i className={"fa fa-arrow-circle-" + (this.props.sortOrder.download ? "down" : "up")}/>
                         </span>
                     </span>
                 </div>
                 <div className={"table-cell"} data-header="Upload (Mbps)">
                     <span
-                        onClick={() => this.handleSort("upload", this.state.ascUploadOrder)}
+                        onClick={() => this.props.handleSort("upload", this.props.sortOrder.upload)}
                         className={"table-cell-header-text"}>
                             Upload (Mbps)
                         <span className="icon has-text-info">
-                          <i className={"fa fa-arrow-circle-" + (this.state.ascUploadOrder ? "down" : "up")}/>
+                          <i className={"fa fa-arrow-circle-" + (this.props.sortOrder.upload ? "down" : "up")}/>
                         </span>
                     </span>
                 </div>
                 <div className={"table-cell"} data-header="Ping (ms)">
                     <span
-                        onClick={() => this.handleSort("ping", this.state.ascPingOrder)}
+                        onClick={() => this.props.handleSort("ping", this.props.sortOrder.ping)}
                         className={"table-cell-header-text"}>
                             Ping (ms)
                         <span className=" icon has-text-info">
-                          <i className={"fa fa-arrow-circle-" + (this.state.ascPingOrder ? "down" : "up")}/>
+                          <i className={"fa fa-arrow-circle-" + (this.props.sortOrder.ping ? "down" : "up")}/>
                         </span>
                     </span>
                 </div>
@@ -87,6 +72,7 @@ class EntriesTable extends Component {
                     showNote={this.props.showNote}
                     sanitizeInputs={this.props.sanitizeInputs}
                     validateInputs={this.props.validateInputs}
+                    coordinates={this.props.coordinates}
                 />
             })}
         </div>

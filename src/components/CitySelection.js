@@ -4,9 +4,6 @@ class CitySelection extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            displayNote: false,
-            showStats: false,
-            showForm: false,
             showDropdown: false
         }
     }
@@ -33,7 +30,7 @@ class CitySelection extends Component {
         return (
 
             <div
-                className={"top-section__action-button dropdown dropdown--city" + (this.state.showDropdown ? " is-active" : "")}
+                className={"dropdown dropdown--city" + (this.state.showDropdown ? " is-active" : "")}
                 ref={this.setDropdownRef}>
                 <div className="dropdown-trigger" onClick={() => {
                     this.setState((previousState) => {
@@ -51,21 +48,21 @@ class CitySelection extends Component {
                     <div className="dropdown-content">
                         <a
                             className={"dropdown-item" + (this.props.city === 'kingston' ? ' is-active' : '')}
-                            onClick={() => this.props.selectCity("kingston")}>
+                            onClick={() => this.props.selectCity("kingston", {latitude: 44.2312, longitude: -76.4860})}>
                             Kingston
                         </a>
                         <a className={"dropdown-item" + (this.props.city === 'montreal' ? ' is-active' : '')}
-                           onClick={() => this.props.selectCity("montreal")}>
+                           onClick={() => this.props.selectCity("montreal", {latitude: 45.5017, longitude: -73.5673})}>
                             Montreal
                         </a>
                         <a
                             className={"dropdown-item" + (this.props.city === 'toronto' ? ' is-active' : '')}
-                            onClick={() => this.props.selectCity("toronto")}>
+                            onClick={() => this.props.selectCity("toronto", {latitude: 43.6532, longitude: -79.3832})}>
                             Toronto
                         </a>
                         <a
                             className={"dropdown-item" + (this.props.city === 'ottawa' ? ' is-active' : '')}
-                            onClick={() => this.props.selectCity("ottawa")}>
+                            onClick={() => this.props.selectCity("ottawa", {latitude: 45.4215, longitude: -75.6972})}>
                             Ottawa
                         </a>
                     </div>

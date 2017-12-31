@@ -76,6 +76,10 @@ input[type=number]::-webkit-outer-spin-button {
   margin-left: 5px;
   margin-right: 5px; }
 
+.login__link-accounts {
+  margin-top: 20px;
+  margin-bottom: 10px; }
+
 .login__coffee {
   width: 80px;
   margin-top: 40px;
@@ -88,52 +92,56 @@ input[type=number]::-webkit-outer-spin-button {
   margin: 0 auto;
   padding: 0 20px 40px; }
 
-.home__logout-container {
-  margin-top: 20px;
-  text-align: right; }
-  @media (max-width: 700px) {
-    .home__logout-container {
-      text-align: center; } }
-
 .home__top-section {
   display: flex;
-  flex-wrap: wrap;
-  margin-top: 45px;
-  justify-content: space-evenly;
-  align-items: center; }
+  justify-content: space-between;
+  margin-top: 20px; }
   @media (max-width: 700px) {
     .home__top-section {
+      text-align: center; } }
+
+.home__summary-section {
+  margin-top: 35px; }
+  @media (max-width: 700px) {
+    .home__summary-section {
       margin-top: 10px; } }
 
-.top-section__title {
+.summary-section {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center; }
+  @media (min-width: 768px) {
+    .summary-section {
+      flex-direction: row;
+      justify-content: space-between; } }
+
+.summary-section__title {
   margin: 10px 0;
   font-size: 1.5rem;
   text-align: center; }
   @media (min-width: 576px) {
-    .top-section__title {
+    .summary-section__title {
       font-size: 1.75rem;
       white-space: nowrap; } }
 
-.top-section__action-buttons {
+.summary-section__actions {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
   justify-content: center; }
   @media (min-width: 576px) {
-    .top-section__action-buttons {
+    .summary-section__actions {
       flex-direction: row;
       flex-wrap: nowrap; } }
 
-.top-section__action-button {
+.summary-section__action-button {
   margin: 5px 10px; }
   @media (min-width: 576px) {
-    .top-section__action-button:first-child {
+    .summary-section__action-button:first-child {
       margin-left: 0; }
-    .top-section__action-button:last-child {
+    .summary-section__action-button:last-child {
       margin-right: 0; } }
-
-.home__city-selector {
-  margin-top: 60px; }
 
 .city-selector {
   display: flex;
@@ -147,6 +155,10 @@ input[type=number]::-webkit-outer-spin-button {
   max-width: 1200px;
   margin: auto;
   margin-top: 20px; }
+
+@media (min-width: 768px) {
+  .dropdown--sort {
+    display: none !important; } }
 
 .stats__group {
   text-align: center;
@@ -188,20 +200,8 @@ input[type=number]::-webkit-outer-spin-button {
       display: flex;
       flex-wrap: nowrap;
       width: 100%; }
-    .table-row-overlay {
-      display: none; }
     .table-row-button {
       margin: 0 10px; }
-    .table-row:hover .table-row-overlay {
-      position: absolute;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.59); }
     @media (min-width: 768px) {
       .table-row {
         border: none;
@@ -259,7 +259,8 @@ input[type=number]::-webkit-outer-spin-button {
       border: none !important;
       padding: 0.5em;
       font-size: 1rem;
-      width: 100%; }
+      width: 100%;
+      height: 100%; }
     .table-cell:before {
       content: attr(data-header);
       width: 40%;
@@ -308,5 +309,46 @@ input[type=number]::-webkit-outer-spin-button {
   flex-grow: 1;
   flex-basis: 0; }
 
-.dropdown--city {
-  display: inline-block; }
+.table-cell__autocomplete {
+  width: 100%; }
+
+.table-cell__autocomplete-results,
+.add-entry-form__autocomplete-results {
+  position: absolute;
+  left: 0;
+  margin-top: 4px;
+  width: 100%;
+  z-index: 2;
+  box-shadow: 0 2px 3px rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.1); }
+
+.table-row-indicators {
+  height: calc(100% - 1px);
+  position: absolute;
+  padding-left: 40px;
+  right: 0;
+  top: 0; }
+  @media (min-width: 768px) {
+    .table-row-indicators {
+      height: calc(100% - 2px);
+      right: 1px;
+      top: 1px; } }
+
+.table-row-indicator {
+  width: 5px;
+  height: 100%;
+  float: left; }
+
+.table-row-indicator--note {
+  background-color: #209cee; }
+
+.table-row-indicator--user-entry {
+  background-color: #00d1b2; }
+
+.table-row-overlay {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.59);
+  padding: 0 20px;
+  float: left; }

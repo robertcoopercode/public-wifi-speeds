@@ -4,6 +4,11 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="theme-color" content="#000000">
+    <!--Facebook OG-->
+    <meta property="og:image" content="https://publicwifispeeds.firebaseapp.com/facebook.png"/>
+    <meta property="og:title" content="Public Wifi Speeds"/>
+    <meta property="og:type" content="website"/>
+    <meta property="og:description" content="A place to view and record wifi speeds at public locations."/>
     <!--
       manifest.json provides metadata used when your web app is added to the
       homescreen on Android. See https://developers.google.com/web/fundamentals/engage-and-retain/web-app-manifest/
@@ -20,7 +25,7 @@
       work correctly both with client-side routing and a non-root public URL.
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
-    <title>React App</title>
+    <title>Public Wifi Speeds</title>
   </head>
   <body>
     <noscript>
@@ -37,5 +42,6 @@
       To begin the development, run `npm start` or `yarn start`.
       To create a production bundle, use `npm run build` or `yarn build`.
     -->
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=%REACT_APP_GOOGLE_PLACES_API%&libraries=places"></script>
   </body>
 </html>

@@ -30,40 +30,36 @@
     width: 100%;
     border: 2px solid black;
     border-bottom: none;
-    &:nth-of-type(even) { background-color: $dark-color; }
-    &:nth-of-type(odd) { background-color: $light-color; }
-    &:nth-of-type(1){ background-color: #ffdd57; }
+    &:nth-of-type(even) {
+      background-color: $dark-color;
+    }
+    &:nth-of-type(odd) {
+      background-color: $light-color;
+    }
+    &:nth-of-type(1) {
+      background-color: #ffdd57;
+    }
     &--form {
       display: flex;
       flex-wrap: nowrap;
       width: 100%;
     }
-    &-overlay{
-      display: none;
-    }
     &-button {
       margin: 0 10px;
     }
-    &:hover{
-      .table-row-overlay {
-        position: absolute;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.59);
-      }
-    }
     @include respond-to ($medium) {
-        border: none;
-        display: flex;
-        flex-flow: row nowrap;
-        &:nth-of-type(even) { background-color: $light-color; }
-        &:nth-of-type(odd) { background-color: $dark-color;}
-        &:nth-of-type(1){ background-color: #ffdd57;}
+      border: none;
+      display: flex;
+      flex-flow: row nowrap;
+      &:nth-of-type(even) {
+        background-color: $light-color;
+      }
+      &:nth-of-type(odd) {
+        background-color: $dark-color;
+      }
+      &:nth-of-type(1) {
+        background-color: #ffdd57;
+      }
     }
   }
   &-cell-text {
@@ -122,6 +118,7 @@
       padding: 0.5em;
       font-size: 1rem;
       width: 100%;
+      height: 100%;
     }
     &:before {
       content: attr(data-header);
@@ -141,7 +138,9 @@
       padding: 0.5em;
       flex-grow: 1;
       flex-basis: 0;
-      &:before { content: none; }
+      &:before {
+        content: none;
+      }
     }
   }
   &-cell-header-text {
@@ -151,7 +150,7 @@
       cursor: pointer;
     }
   }
-  &-save{
+  &-save {
     &-container {
       position: absolute !important;
       display: flex;
@@ -183,6 +182,54 @@
   flex-basis: 0;
 }
 
-.dropdown--city {
-  display: inline-block;
+.table-cell__autocomplete {
+  width: 100%;
+}
+
+.table-cell__autocomplete-results,
+.add-entry-form__autocomplete-results {
+  position: absolute;
+  left: 0;
+  margin-top: 4px;
+  width: 100%;
+  z-index: 2;
+  box-shadow: 0 2px 3px rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.1);
+}
+
+.table-row-indicators {
+  height: calc(100% - 1px);
+  position: absolute;
+  padding-left: 40px;
+  right: 0;
+  top: 0;
+
+  @include respond-to($medium) {
+    height: calc(100% - 2px);
+    right: 1px;
+    top: 1px;
+  }
+}
+
+.table-row-indicator {
+  width: 5px;
+  height: 100%;
+  float: left;
+}
+
+.table-row-indicator--note {
+  background-color: #209cee;
+}
+
+.table-row-indicator--user-entry {
+  background-color: #00d1b2;
+}
+
+.table-row-overlay {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.59);
+  padding: 0 20px;
+  float: left;
 }

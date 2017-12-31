@@ -1,6 +1,10 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import * as firebase from 'firebase';
+import PlacesAutocomplete from 'react-places-autocomplete';
+
+// This line is required to tell the linter that the google variable will be available globally at runtime
+/*global google*/
 
 class AddEntryForm extends Component {
     constructor(props) {
@@ -11,7 +15,8 @@ class AddEntryForm extends Component {
             upload: "",
             ping: "",
             note: "",
-            errors: null
+            errors: null,
+            locationSelected: false,
         }
         this.state = this.INITIAL_STATE
     }
@@ -20,13 +25,6 @@ class AddEntryForm extends Component {
         this.entryForm.addEventListener("invalid", function (event) {
             event.preventDefault()
         }, true)
-    }
-    componentDidUpdate = () => {
-        fetch('https://maps.googleapis.com/maps/api/place/textsearch/json?query=restaurants+in+Sydney&key=AIzaSyBTaH1qBsN1jYwNApUGOE4tDIfPQlew-0U').then(function(response) {
-            console.log(response)
-        }).catch(function(err) {
-            console.log(err)
-        });
     }
     getCurrentDate = () => {
         let today = new Date();
@@ -47,11 +45,12 @@ class AddEntryForm extends Component {
         const invalidFields = this.entryForm.querySelectorAll(":invalid")
         let errorMessages = {};
 
+        // Loop through all invalid fields and add them to the errorMessages object
         for (let i = 0; i < invalidFields.length; i++) {
             const fieldName = invalidFields[i].dataset.name
             errorMessages[fieldName] = invalidFields[i].validationMessage
         }
-        // If there are errors, give focus to the first invalid field
+        // If there are errors, give focus to the first invalid field and set the errors into state
         if (invalidFields.length > 0) {
             invalidFields[0].focus();
             this.setState({
@@ -61,7 +60,7 @@ class AddEntryForm extends Component {
     }
     onSubmit = (e) => {
         e.preventDefault();
-        const errors = this.props.validateInputs(this.state.location, this.state.download, this.state.upload, this.state.ping)
+        const errors = this.props.validateInputs(this.state.location, this.state.locationSelected, this.state.download, this.state.upload, this.state.ping, this.state.note)
         if (Object.keys(errors).length === 0) {
             firebase.database().ref().child('/entries/' + this.props.city).push(
                 // Returns an object
@@ -90,26 +89,51 @@ class AddEntryForm extends Component {
         }
     }
 
+    handleLocationSelect = (address) => {
+        this.setState({
+            location: address,
+            locationSelected: true
+        })
+    }
+
     render() {
         return (
             <form
                 ref={(el) => this.entryForm = el}
                 className="add-entry-form"
                 onSubmit={this.onSubmit.bind(this)}>
-                <div className="field">
-                    <label className="label">Location</label>
-                    <div className="control">
-                        <input
-                            className={"input" +
-                            (this.state.errors && this.state.errors.location
-                                ? " is-danger"
-                                : "")}
-                            data-name="location"
-                            type="text"
-                            placeholder="Tim Hortons on Princess and MacDonnell"
-                            maxLength="150"
-                            onChange={(e) => this.setState({location: e.target.value})}
-                            required/>
+                <div className={"field"}>
+                    <label className={"label"}>Location</label>
+                    <div className={"control"}>
+                        <PlacesAutocomplete
+                            inputProps={
+                                {
+                                    value: this.state.location,
+                                    onChange: (location) => this.setState({location, locationSelected: true}),
+                                    placeholder: "CRAVE Coffee House & Bakery",
+                                    maxLength: "150",
+                                    required: true,
+                                    "data-name": "location"
+                                }
+                            }
+                            classNames={
+                                {
+                                    root: 'add-entry-form__autocomplete',
+                                    autocompleteContainer: 'add-entry-form__autocomplete-results',
+                                    input: 'input' +
+                                    (this.state.errors && this.state.errors.location
+                                        ? " is-danger"
+                                        : "")
+                                }
+                            }
+                            googleLogo={false}
+                            options={{
+                                location: new google.maps.LatLng(this.props.cityCoordinates.latitude, this.props.cityCoordinates.longitude),
+                                radius: 20000,
+                                type: ['address']
+                            }}
+                            onSelect={this.handleLocationSelect}
+                        />
                     </div>
                     {this.state.errors && this.state.errors.location
                         ? <p className="help is-danger">{this.state.errors.location}</p>
@@ -190,8 +214,7 @@ class AddEntryForm extends Component {
                       type="textarea"
                       placeholder="The food was great but the wifi was slow :'("
                       onChange={(e) => this.setState({note: e.target.value})}
-                      maxLength="1000"
-                      required/>
+                      maxLength="1000"/>
                         {this.state.errors && this.state.errors.note
                             ? <p className="help is-danger">{this.state.errors.note}</p>
                             : null

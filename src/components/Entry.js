@@ -1,13 +1,19 @@
 import React, {Component} from 'react';
 import * as firebase from 'firebase';
 import PropTypes from "prop-types";
+import PlacesAutocomplete from 'react-places-autocomplete';
+
+// This line is required to tell the linter that the google variable will be available globally at runtime
+/*global google*/
 
 class Entry extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            showOverlay: true,
-            errors: null
+            showOverlay: false,
+            errors: null,
+            locationSelected: true,
+            editEntry: false
         }
     }
 
@@ -51,7 +57,7 @@ class Entry extends Component {
     updateItem = (e, id) => {
         e.preventDefault();
         // Second level of validation before submitting data to the database
-        const errors = this.props.validateInputs(this.state.location, this.state.download, this.state.upload, this.state.ping);
+        const errors = this.props.validateInputs(this.state.location, this.state.locationSelected, this.state.download, this.state.upload, this.state.ping);
         if (Object.keys(errors).length === 0) {
             firebase.database().ref('/entries/' + this.props.city + '/' + id).update(
                 // Returns object
@@ -66,7 +72,7 @@ class Entry extends Component {
                     this.context.authUser.uid
                 )
             )
-            this.setState({showOverlay: true, errors: null})
+            this.setState({editEntry: false, errors: null})
         } else {
             this.setState({
                 errors: errors
@@ -90,10 +96,17 @@ class Entry extends Component {
         return date;
     }
 
+    handleLocationSelect = (address) => {
+        this.setState({
+            location: address,
+            locationSelected: true
+        })
+    }
+
     render() {
         return (
             <div className={"table-row"}>
-                {this.state.showOverlay
+                {!this.state.editEntry
                     ?
                     <React.Fragment>
                         <div className={"table-cell"} data-header="Date">
@@ -121,6 +134,45 @@ class Entry extends Component {
                                 {this.props.entry.ping}
                             </span>
                         </div>
+
+                        <div className={"table-row-indicators"} onMouseOver={() => this.setState({showOverlay: true})} onMouseLeave={() => this.state.showOverlay ? this.setState({showOverlay: false}) : null}>
+
+                            {this.state.showOverlay && (this.props.entry.note.length > 0 || this.context.authUser.uid === this.props.entry.uid)
+                                ? <div className="table-row-overlay" onMouseLeave={() => this.setState({showOverlay: false})}>
+                                    {this.props.entry.note.length > 0
+                                        ? <button
+                                            className={"table-row-button button is-small is-info"}
+                                            onClick={() => this.props.showNote(this.props.entry.note)}
+                                        >Note
+                                        </button>
+                                        : null
+                                    }
+                                    {this.context.authUser.uid === this.props.entry.uid
+                                        ? <React.Fragment>
+                                            <button
+                                                className="table-row-button button is-small is-primary"
+                                                onClick={() => this.setState({editEntry: true, showOverlay: false})}
+                                            >Edit
+                                            </button>
+                                            < button className="table-row-button button is-small is-danger"
+                                                     onClick={() => this.deleteItem(this.props.entry.id)}>Delete
+                                            </button>
+                                        </React.Fragment>
+                                        : null
+                                    }
+                                </div>
+                                : null
+                            }
+
+                            {this.props.entry.note.length > 0
+                                ? <div className={"table-row-indicator table-row-indicator--note"} />
+                                : null
+                            }
+                            {this.context.authUser.uid === this.props.entry.uid
+                                ? <div className={"table-row-indicator table-row-indicator--user-entry"} />
+                                : null
+                            }
+                        </div>
                     </React.Fragment>
                     :
                     <form
@@ -142,13 +194,32 @@ class Entry extends Component {
                                 <p className="table-cell--error">Invalid</p>
                                 : null
                             }
-                            <input className={"table-cell--input"}
-                                   data-name="location"
-                                   maxLength="100"
-                                   type={"text"}
-                                   value={this.state.location}
-                                   onChange={(e) => this.setState({location: e.target.value})}>
-                            </input>
+                            <PlacesAutocomplete
+                                inputProps={
+                                    {
+                                        value: this.state.location,
+                                        onChange: (location) => this.setState({location, locationSelected: true}),
+                                        maxLength: "150",
+                                        required: true,
+                                        "data-name": "location"
+                                    }
+                                }
+                                classNames={
+                                    {
+                                        root: 'table-cell__autocomplete',
+                                        autocompleteContainer: 'table-cell__autocomplete-results',
+                                        input: 'table-cell--input'
+                                    }
+                                }
+                                googleLogo={false}
+                                options={{
+                                    location: new google.maps.LatLng(this.props.cityCoordinates.latitude, this.props.cityCoordinates.longitude),
+                                    radius: 20000,
+                                    type: ['address']
+                                }}
+                                onSelect={this.handleLocationSelect}
+                            />
+
                         </div>
                         <div className={"table-cell" +
                         (this.state.errors && this.state.errors.download
@@ -216,30 +287,6 @@ class Entry extends Component {
                         </div>
                     </form>
                 }
-                {this.state.showOverlay
-                    ? <div className="table-row-overlay">
-                        <button
-                            className={"table-row-button button is-small is-info"}
-                            onClick={() => this.props.showNote(this.props.entry.note)}
-                        >Note
-                        </button>
-                        {this.context.authUser.uid === this.props.entry.uid
-                            ? <React.Fragment>
-                                <button
-                                    className="table-row-button button is-small is-primary"
-                                    onClick={() => this.setState({showOverlay: false})}
-                                >Edit
-                                </button>
-                                < button className="table-row-button button is-small is-danger"
-                                         onClick={() => this.deleteItem(this.props.entry.id)}>Delete
-                                </button>
-                            </React.Fragment>
-                            : null
-                        }
-                    </div>
-                    : null
-                }
-
             </div>
         )
     }
