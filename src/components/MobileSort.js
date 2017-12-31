@@ -73,7 +73,7 @@ class MobileSort extends Component {
                         </a>
                         <a
                             className={"dropdown-item" + (this.props.sortField === 'ping' ? ' is-active' : '')}
-                            onClick={() => this.selectSort("ping", false, "Fastest Ping")}>
+                            onClick={() => this.selectSort("ping", true, "Fastest Ping")}>
                             Fastest Ping
                         </a>
                     </div>
