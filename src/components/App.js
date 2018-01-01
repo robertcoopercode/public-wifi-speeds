@@ -1,6 +1,6 @@
 import React from "react"
-import "../App.css"
 import "bulma/css/bulma.css"
+import "../App.css"
 import withAuthentication from "./withAuthentication"
 import Home from "./Home"
 import Login from "./Login"
