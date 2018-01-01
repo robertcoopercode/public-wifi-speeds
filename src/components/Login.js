@@ -41,7 +41,7 @@ class Login extends Component {
                 ) {
                     // Step 2.
                     // User's email already exists.
-                    // The pending Facebook credential.
+                    // Save the pending account credential.
                     let pendingCred = error.credential
                     // The provider account's email address.
                     // Get registered providers for this email.
@@ -51,7 +51,6 @@ class Login extends Component {
                         .then(providers => {
                             // Step 3.
                             // Construct provider object for that provider.
-                            // TODO: implement getProviderForProviderId.
                             let provider
                             let providerName
                             switch (providers[0]) {
@@ -84,12 +83,7 @@ class Login extends Component {
                                 provider,
                                 pendingCred,
                             })
-                            // At this point, you should let the user know that he already has an account
-                            // but with a different provider, and let him validate the fact he wants to
-                            // sign in with this provider.
-                            // Sign in to provider. Note: browsers usually block popup triggered asynchronously,
-                            // so in real scenario you should ask the user to click on a "continue" button
-                            // that will trigger the signInWithPopup.
+                            // The user must now click on a button to proceed with the linking of accounts done under handleAccountLink()
                         })
                 } else {
                     this.setState({
@@ -109,13 +103,13 @@ class Login extends Component {
                 // Remember that the user may have signed in with an account that has a different email
                 // address than the first one. This can happen as Firebase doesn't control the provider's
                 // sign in flow and the user is free to login using whichever account he owns.
-                // Step 4b.
-                // Link to Facebook credential.
-                // As we have access to the pending credential, we can directly call the link method.
+                //
+                // Link to Acount credentials.
+                // As we have access to the pending credential, we can directly call the linkWithCredential method.
                 result.user
                     .linkWithCredential(this.state.pendingCred)
                     .then(() => {
-                        // Facebook account successfully linked to the existing Firebase user.
+                        // Account successfully linked to the existing Firebase user.
                         this.props.history.push("/")
                     })
             })
@@ -124,7 +118,7 @@ class Login extends Component {
     render() {
         return (
             <div className="login content">
-                <p className={"login__text"}>
+                <p className="login__text">
                     Login with one of the following providers.
                 </p>
                 {this.state.error ? (
@@ -179,9 +173,9 @@ class Login extends Component {
                     />
                 </div>
                 <img
-                    className={"login__coffee"}
-                    src={"/coffee.png"}
-                    alt={"steaming coffee"}
+                    className="login__coffee"
+                    src="/coffee.png"
+                    alt="steaming coffee"
                 />
             </div>
         )
