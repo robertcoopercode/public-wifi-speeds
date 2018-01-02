@@ -5,6 +5,7 @@
   "dependencies": {
     "bulma": "^0.6.1",
     "firebase": "^4.6.2",
+    "moment": "^2.20.1",
     "node-sass-chokidar": "0.0.3",
     "npm-run-all": "^4.1.1",
     "prop-types": "^15.6.0",
