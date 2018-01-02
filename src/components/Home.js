@@ -6,6 +6,7 @@ import AddEntryForm from "./AddEntryForm"
 import Stats from "./Stats"
 import "../App.css"
 import withAuthorization from "./withAuthorization"
+import { roundDecimals } from "../utils"
 
 import * as firebase from "firebase"
 
@@ -44,6 +45,7 @@ class Home extends Component {
     }
 
     componentDidUpdate() {
+        // Fix for mobile modal forms where the cursor would be in the incorrect position on input focus
         if (this.state.showForm) {
             document.getElementsByTagName("body")[0].style.position = "fixed"
         } else {
@@ -60,6 +62,7 @@ class Home extends Component {
         })
     }
 
+    // Function that sanitizes values before they are stored to the database
     sanitizeInputs = (
         location,
         date,
@@ -133,13 +136,13 @@ class Home extends Component {
         sortField = this.state.sortField,
         sortAscending = this.state.sortAscending,
     ) => {
-        /* Create reference to entries in Firebase Database */
+        // Create reference to entries in Firebase Database for the current city being viewed
         const databaseReference = firebase
             .database()
             .ref("/entries/" + city)
             .orderByChild(sortField)
         databaseReference.on("value", snapshot => {
-            /* Update React state when message is added at Firebase Database */
+            // Update React state when message is added at Firebase Database
             let entries = []
             if (!!snapshot.val()) {
                 snapshot.forEach(function(child) {
