@@ -74,9 +74,9 @@ class Home extends Component {
             location: location,
             date: date,
             timestamp: timestamp,
-            download: parseFloat(parseFloat(download).toFixed(2)),
-            upload: parseFloat(parseFloat(upload).toFixed(2)),
-            ping: parseFloat(parseFloat(ping).toFixed(2)),
+            download: roundDecimals(download, 2),
+            upload: roundDecimals(upload, 2),
+            ping: roundDecimals(ping, 2),
             note: note.trim(),
             uid: uid,
         }
