@@ -1,4 +1,5 @@
 import React, { Component } from "react"
+import { capitalize } from "../utils"
 
 class CitySelection extends Component {
     constructor(props) {
@@ -55,10 +56,7 @@ class CitySelection extends Component {
                         aria-haspopup="true"
                         aria-controls="dropdown-menu"
                     >
-                        <span>
-                            {this.props.city[0].toUpperCase() +
-                                this.props.city.slice(1)}
-                        </span>
+                        <span>{capitalize(this.props.city)}</span>
                         <span className="icon is-small">
                             <i
                                 className="fa fa-angle-down"

@@ -6,7 +6,7 @@ import AddEntryForm from "./AddEntryForm"
 import Stats from "./Stats"
 import "../App.css"
 import withAuthorization from "./withAuthorization"
-import { roundDecimals } from "../utils"
+import { roundDecimals, capitalize } from "../utils"
 
 import * as firebase from "firebase"
 
@@ -37,10 +37,7 @@ class Home extends Component {
     }
 
     componentDidMount() {
-        document.title =
-            "Wifi Speeds - " +
-            this.state.city[0].toUpperCase() +
-            this.state.city.slice(1)
+        document.title = "Wifi Speeds - " + capitalize(this.state.city)
         this.fetchEnries(this.state.city, "location")
     }
 
@@ -171,8 +168,7 @@ class Home extends Component {
     }
 
     selectCity = (name, coordinates) => {
-        document.title =
-            "Wifi Speeds - " + name[0].toUpperCase() + name.slice(1)
+        document.title = "Wifi Speeds - " + capitalize(name)
         this.fetchEnries(name, undefined, undefined)
         this.setState({
             city: name,
