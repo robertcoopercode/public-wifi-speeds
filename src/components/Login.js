@@ -1,4 +1,4 @@
-import React, { Component } from "react"
+import React, { Component, Fragment } from "react"
 import {
     FacebookLoginButton,
     GoogleLoginButton,
@@ -122,7 +122,7 @@ class Login extends Component {
                     Login with one of the following providers.
                 </p>
                 {this.state.error ? (
-                    <React.Fragment>
+                    <Fragment>
                         <article className="login__error message is-danger">
                             <div className="message-body">
                                 {this.state.error}
@@ -136,7 +136,7 @@ class Login extends Component {
                                 Link Accounts
                             </button>
                         ) : null}
-                    </React.Fragment>
+                    </Fragment>
                 ) : null}
                 <div className="login__authentication-buttons">
                     <FacebookLoginButton
