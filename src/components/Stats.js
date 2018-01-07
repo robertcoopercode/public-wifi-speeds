@@ -1,4 +1,4 @@
-import React, { Component } from "react"
+import React, { Component, Fragment } from "react"
 import PropTypes from "prop-types"
 
 class Stats extends Component {
@@ -14,7 +14,7 @@ class Stats extends Component {
         let averageUpload = average(this.props.entries, "upload")
         let averagePing = average(this.props.entries, "ping")
         return (
-            <React.Fragment>
+            <Fragment>
                 <article className="stats message is-info">
                     <div className="message-header">
                         <p>Stats</p>
@@ -48,7 +48,7 @@ class Stats extends Component {
                         </div>
                     </div>
                 </article>
-            </React.Fragment>
+            </Fragment>
         )
     }
 }

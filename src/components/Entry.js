@@ -1,4 +1,5 @@
-import React, { Component } from "react"
+import React, { Component, Fragment} from "react"
+import moment from 'moment'
 import * as firebase from "firebase"
 import PropTypes from "prop-types"
 import PlacesAutocomplete from "react-places-autocomplete"
@@ -97,19 +98,7 @@ class Entry extends Component {
     }
 
     getCurrentDate = () => {
-        let today = new Date()
-        let dd = today.getDate()
-        let mm = today.getMonth() + 1 //January is 0!
-
-        let yyyy = today.getFullYear()
-        if (dd < 10) {
-            dd = "0" + dd
-        }
-        if (mm < 10) {
-            mm = "0" + mm
-        }
-        let date = dd + "/" + mm + "/" + yyyy
-        return date
+        return moment(new Date()).format('DD/MM/YYYY')
     }
 
     handleLocationSelect = address => {
@@ -123,7 +112,7 @@ class Entry extends Component {
         return (
             <div className={"table-row"}>
                 {!this.state.editEntry ? (
-                    <React.Fragment>
+                    <Fragment>
                         <div className={"table-cell"} data-header="Date">
                             <span className={"table-cell-text"}>
                                 {this.props.entry.date}
@@ -193,7 +182,7 @@ class Entry extends Component {
                                     ) : null}
                                     {this.context.authUser.uid ===
                                     this.props.entry.uid ? (
-                                        <React.Fragment>
+                                        <Fragment>
                                             <button
                                                 className="table-row-button button is-small is-primary"
                                                 onClick={() =>
@@ -215,7 +204,7 @@ class Entry extends Component {
                                             >
                                                 Delete
                                             </button>
-                                        </React.Fragment>
+                                        </Fragment>
                                     ) : null}
                                 </div>
                             ) : null}
@@ -236,7 +225,7 @@ class Entry extends Component {
                                 />
                             ) : null}
                         </div>
-                    </React.Fragment>
+                    </Fragment>
                 ) : (
                     <form
                         className={"table-row--form"}

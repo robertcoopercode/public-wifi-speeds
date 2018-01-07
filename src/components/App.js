@@ -1,4 +1,4 @@
-import React from "react"
+import React, { Fragment } from "react"
 import "bulma/css/bulma.css"
 import "../App.css"
 import withAuthentication from "./withAuthentication"
@@ -8,10 +8,10 @@ import { Route } from "react-router-dom"
 import PropTypes from "prop-types"
 
 const App = (props, { authUser }) => (
-    <React.Fragment>
+    <Fragment>
         <Route exact path="/" render={() => <Home />} />
         <Route path="/login" component={Login} />
-    </React.Fragment>
+    </Fragment>
 )
 
 App.contextTypes = {
