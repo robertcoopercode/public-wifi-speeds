@@ -10,7 +10,7 @@ import PlacesAutocomplete from "react-places-autocomplete"
 class AddEntryForm extends Component {
     constructor(props) {
         super(props)
-        this.INITIAL_STATE = {
+        this.state = {
             location: "",
             download: "",
             upload: "",
@@ -19,8 +19,8 @@ class AddEntryForm extends Component {
             errors: null,
             locationSelected: false,
         }
-        this.state = this.INITIAL_STATE
     }
+
     componentDidMount = () => {
         // Prevent default form validation bubbles from appearing
         this.entryForm.addEventListener(
@@ -42,11 +42,10 @@ class AddEntryForm extends Component {
         let errorMessages = {}
 
         // Loop through all invalid fields and add them to the errorMessages object
-        for (let i = 0; i < invalidFields.length; i++) {
-            const fieldName = invalidFields[i].dataset.name
-            errorMessages[fieldName] = invalidFields[i].validationMessage
-        }
-        // If there are errors, give focus to the first invalid field and set the errors into state
+        invalidFields.forEach( (field, key) => {
+            errorMesages[field.dataset.name] = invalidFields[key].validationMessage;
+        });
+
         if (invalidFields.length > 0) {
             invalidFields[0].focus()
             this.setState({
