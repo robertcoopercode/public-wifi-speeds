@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from "react"
 import PropTypes from "prop-types"
 
-function average(entries, name, totalEntries) {
+const average = (entries, name, totalEntries) => {
     let total = entries.reduce(function(total, entry) {
         return (total += entry[name])
     }, 0)
