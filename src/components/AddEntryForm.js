@@ -10,7 +10,7 @@ import PlacesAutocomplete from "react-places-autocomplete"
 class AddEntryForm extends Component {
     constructor(props) {
         super(props)
-        this.INTIAL_STATE = {
+        this.INITIAL_STATE = {
             location: "",
             download: "",
             upload: "",
