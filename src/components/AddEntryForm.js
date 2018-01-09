@@ -10,7 +10,7 @@ import PlacesAutocomplete from "react-places-autocomplete"
 class AddEntryForm extends Component {
     constructor(props) {
         super(props)
-        this.state = {
+        this.INTIAL_STATE = {
             location: "",
             download: "",
             upload: "",
@@ -19,6 +19,7 @@ class AddEntryForm extends Component {
             errors: null,
             locationSelected: false,
         }
+      this.state = this.INITIAL_STATE
     }
 
     componentDidMount = () => {
