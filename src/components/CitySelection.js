@@ -21,7 +21,10 @@ class CitySelection extends Component {
     }
 
     handleClickOutsideDropdown = e => {
-        const dropdown = this.dropdownRef && !this.dropdownRef.contains(e.target) && this.state.showDropdown;
+        const dropdown =
+            this.dropdownRef &&
+            !this.dropdownRef.contains(e.target) &&
+            this.state.showDropdown
         if (dropdown) {
             this.setState({ showDropdown: false })
         }

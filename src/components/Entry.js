@@ -1,4 +1,4 @@
-import React, { Component, Fragment} from "react"
+import React, { Component, Fragment } from "react"
 import moment from "moment"
 import * as firebase from "firebase"
 import PropTypes from "prop-types"
@@ -50,9 +50,10 @@ class Entry extends Component {
         let errorMessages = {}
 
         // Loop through all invalid fields and add them to the errorMessages object
-        invalidFields.forEach( (field, key) => {
-            errorMesages[field.dataset.name] = invalidFields[key].validationMessage;
-        });
+        invalidFields.forEach((field, key) => {
+            errorMessages[field.dataset.name] =
+                invalidFields[key].validationMessage
+        })
 
         // If there are errors, give focus to the first invalid field
         if (invalidFields.length > 0) {
@@ -97,7 +98,7 @@ class Entry extends Component {
     }
 
     getCurrentDate = () => {
-        return moment(new Date()).format('DD/MM/YYYY')
+        return moment(new Date()).format("DD/MM/YYYY")
     }
 
     handleLocationSelect = address => {
