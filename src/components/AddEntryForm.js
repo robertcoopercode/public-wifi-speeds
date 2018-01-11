@@ -43,9 +43,10 @@ class AddEntryForm extends Component {
         let errorMessages = {}
 
         // Loop through all invalid fields and add them to the errorMessages object
-        invalidFields.forEach( (field, key) => {
-            errorMesages[field.dataset.name] = invalidFields[key].validationMessage;
-        });
+        invalidFields.forEach((field, key) => {
+            errorMessages[field.dataset.name] =
+                invalidFields[key].validationMessage
+        })
 
         if (invalidFields.length > 0) {
             invalidFields[0].focus()
