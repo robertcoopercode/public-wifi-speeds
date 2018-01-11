@@ -1,4 +1,4 @@
-import React, { Component, Fragment} from "react"
+import React, { Component, Fragment } from "react"
 import moment from "moment"
 import * as firebase from "firebase"
 import PropTypes from "prop-types"
@@ -98,7 +98,7 @@ class Entry extends Component {
     }
 
     getCurrentDate = () => {
-        return moment(new Date()).format('DD/MM/YYYY')
+        return moment(new Date()).format("DD/MM/YYYY")
     }
 
     handleLocationSelect = address => {

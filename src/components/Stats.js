@@ -5,14 +5,22 @@ const average = (entries, name, totalEntries) => {
     let total = entries.reduce(function(total, entry) {
         return (total += entry[name])
     }, 0)
-        return Math.round(total / totalEntries * 100) / 100
+    return Math.round(total / totalEntries * 100) / 100
 }
 
 class Stats extends Component {
     render() {
         const totalEntries = this.props.entries.length
-        const averageDownload = average(this.props.entries, "download", totalEntries)
-        const averageUpload = average(this.props.entries, "upload", totalEntries)
+        const averageDownload = average(
+            this.props.entries,
+            "download",
+            totalEntries,
+        )
+        const averageUpload = average(
+            this.props.entries,
+            "upload",
+            totalEntries,
+        )
         const averagePing = average(this.props.entries, "ping", totalEntries)
 
         return (
