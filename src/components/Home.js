@@ -249,7 +249,7 @@ class Home extends Component {
                     validateInputs={this.validateInputs}
                     sortOrder={this.state.sortOrder}
                     handleSort={this.handleSort}
-                    coordinates={this.state.cityCoordinates}
+                    cityCoordinates={this.state.cityCoordinates}
                 />
 
                 {/* Add Entry Form Modal */}

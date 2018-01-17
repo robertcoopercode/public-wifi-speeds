@@ -115,7 +115,7 @@ function EntriesTable(props) {
                         showNote={props.showNote}
                         sanitizeInputs={props.sanitizeInputs}
                         validateInputs={props.validateInputs}
-                        coordinates={props.coordinates}
+                        cityCoordinates={props.cityCoordinates}
                     />
                 )
             })}
