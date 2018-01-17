@@ -1,5 +1,5 @@
 import React, { Component } from "react"
-import moment from 'moment';
+import moment from "moment"
 import PropTypes from "prop-types"
 import * as firebase from "firebase"
 import PlacesAutocomplete from "react-places-autocomplete"
@@ -21,6 +21,7 @@ class AddEntryForm extends Component {
         }
         this.state = this.INITIAL_STATE
     }
+
     componentDidMount = () => {
         // Prevent default form validation bubbles from appearing
         this.entryForm.addEventListener(
@@ -34,7 +35,7 @@ class AddEntryForm extends Component {
 
     getCurrentDate = () => {
         // "02/01/2018"
-        return moment(new Date()).format('DD/MM/YYYY')
+        return moment(new Date()).format("DD/MM/YYYY")
     }
 
     checkValidation = () => {
@@ -42,11 +43,11 @@ class AddEntryForm extends Component {
         let errorMessages = {}
 
         // Loop through all invalid fields and add them to the errorMessages object
-        for (let i = 0; i < invalidFields.length; i++) {
-            const fieldName = invalidFields[i].dataset.name
-            errorMessages[fieldName] = invalidFields[i].validationMessage
-        }
-        // If there are errors, give focus to the first invalid field and set the errors into state
+        invalidFields.forEach((field, key) => {
+            errorMessages[field.dataset.name] =
+                invalidFields[key].validationMessage
+        })
+
         if (invalidFields.length > 0) {
             invalidFields[0].focus()
             this.setState({

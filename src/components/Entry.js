@@ -1,5 +1,5 @@
-import React, { Component, Fragment} from "react"
-import moment from 'moment'
+import React, { Component, Fragment } from "react"
+import moment from "moment"
 import * as firebase from "firebase"
 import PropTypes from "prop-types"
 import PlacesAutocomplete from "react-places-autocomplete"
@@ -49,10 +49,12 @@ class Entry extends Component {
         const invalidFields = this.editForm.querySelectorAll(":invalid")
         let errorMessages = {}
 
-        for (let i = 0; i < invalidFields.length; i++) {
-            const fieldName = invalidFields[i].dataset.name
-            errorMessages[fieldName] = invalidFields[i].validationMessage
-        }
+        // Loop through all invalid fields and add them to the errorMessages object
+        invalidFields.forEach((field, key) => {
+            errorMessages[field.dataset.name] =
+                invalidFields[key].validationMessage
+        })
+
         // If there are errors, give focus to the first invalid field
         if (invalidFields.length > 0) {
             invalidFields[0].focus()
@@ -91,14 +93,12 @@ class Entry extends Component {
                 )
             this.setState({ editEntry: false, errors: null })
         } else {
-            this.setState({
-                errors: errors,
-            })
+            this.setState({ errors: errors })
         }
     }
 
     getCurrentDate = () => {
-        return moment(new Date()).format('DD/MM/YYYY')
+        return moment(new Date()).format("DD/MM/YYYY")
     }
 
     handleLocationSelect = address => {
