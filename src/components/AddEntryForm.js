@@ -6,14 +6,13 @@ import moment from "moment"
 import PropTypes from "prop-types"
 import * as firebase from "firebase"
 import PlacesAutocomplete from "react-places-autocomplete"
-import todoApp from "../reducers"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { addEntry } from "../actions"
 
 const mapStateToProps = function(state) {
     return {
-        todos: state.todos,
+        entries: state.entries,
     }
 }
 

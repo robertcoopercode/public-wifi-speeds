@@ -7,10 +7,10 @@ import { Provider } from "react-redux"
 
 import "./fire"
 import App from "./components/App"
-import todoApp from "./reducers"
+import appReducers from "./reducers"
 
 const store = createStore(
-    todoApp,
+    appReducers,
     window.__REDUX_DEVTOOLS_EXTENSION__ &&
         window.__REDUX_DEVTOOLS_EXTENSION__(),
 )

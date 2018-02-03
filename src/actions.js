@@ -3,6 +3,7 @@
  */
 
 export const ADD_ENTRY = "ADD_ENTRY"
+export const SELECT_CITY = "SELECT_CITY"
 
 /*
  * other constants
@@ -38,5 +39,13 @@ export function addEntry(
         ping,
         note,
         uid,
+    }
+}
+
+export function selectCity(selectedCity, coordinates) {
+    return {
+        type: SELECT_CITY,
+        selectedCity,
+        coordinates,
     }
 }

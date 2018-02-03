@@ -1,4 +1,5 @@
 import React, { Component } from "react"
+import { connect } from "react-redux"
 import CitySelection from "./CitySelection"
 import MobileSort from "./MobileSort"
 import EntriesTable from "./EntriesTable"
@@ -37,8 +38,8 @@ class Home extends Component {
     }
 
     componentDidMount() {
-        document.title = "Wifi Speeds - " + capitalize(this.state.city)
-        this.fetchEnries(this.state.city, "location")
+        document.title = "Wifi Speeds - " + capitalize(this.props.selectedCity)
+        this.fetchEnries(this.props.selectedCity, "location")
     }
 
     componentDidUpdate() {
@@ -47,6 +48,14 @@ class Home extends Component {
             document.getElementsByTagName("body")[0].style.position = "fixed"
         } else {
             document.getElementsByTagName("body")[0].style.position = "relative"
+        }
+    }
+
+    componentWillReceiveProps(nextProps) {
+        if (this.props.selectedCity !== nextProps.selectedCity) {
+            document.title =
+                "Wifi Speeds - " + capitalize(nextProps.selectedCity)
+            this.fetchEnries(nextProps.selectedCity, undefined, undefined)
         }
     }
 
@@ -129,7 +138,7 @@ class Home extends Component {
     }
 
     fetchEnries = (
-        city = this.state.city,
+        city = this.props.selectedCity,
         sortField = this.state.sortField,
         sortAscending = this.state.sortAscending,
     ) => {
@@ -168,8 +177,6 @@ class Home extends Component {
     }
 
     selectCity = (name, coordinates) => {
-        document.title = "Wifi Speeds - " + capitalize(name)
-        this.fetchEnries(name, undefined, undefined)
         this.setState({
             city: name,
             cityCoordinates: {
@@ -200,10 +207,7 @@ class Home extends Component {
         return (
             <div className={"home"}>
                 <div className={"home__top-section"}>
-                    <CitySelection
-                        city={this.state.city}
-                        selectCity={this.selectCity}
-                    />
+                    <CitySelection />
                     <button
                         className="home__logout-button button is-danger"
                         onClick={this.signout}
@@ -213,7 +217,7 @@ class Home extends Component {
                 </div>
                 <div className={"home__summary-section summary-section"}>
                     <h2 className={"summary-section__title"}>
-                        Wifi Speeds for {this.state.city}
+                        Wifi Speeds for {this.props.selectedCity}
                     </h2>
                     <div className={"summary-section__actions"}>
                         <button
@@ -242,14 +246,14 @@ class Home extends Component {
 
                 <EntriesTable
                     entries={this.state.entries}
-                    city={this.state.city}
+                    city={this.props.selectedCity}
                     fetchEnries={this.fetchEnries}
                     showNote={this.showNote}
                     sanitizeInputs={this.sanitizeInputs}
                     validateInputs={this.validateInputs}
                     sortOrder={this.state.sortOrder}
                     handleSort={this.handleSort}
-                    cityCoordinates={this.state.cityCoordinates}
+                    cityCoordinates={this.props.selectedCityCoordinates}
                 />
 
                 {/* Add Entry Form Modal */}
@@ -273,8 +277,10 @@ class Home extends Component {
                                     hideForm={() =>
                                         this.setState({ showForm: false })
                                     }
-                                    city={this.state.city}
-                                    cityCoordinates={this.state.cityCoordinates}
+                                    city={this.props.selectedCity}
+                                    cityCoordinates={
+                                        this.props.selectedCityCoordinates
+                                    }
                                     sanitizeInputs={this.sanitizeInputs}
                                     validateInputs={this.validateInputs}
                                 />
@@ -338,6 +344,15 @@ class Home extends Component {
     }
 }
 
+const mapStateToProps = function(state) {
+    return {
+        selectedCity: state.city.selectedCity,
+        selectedCityCoordinates: state.city.coordinates,
+    }
+}
+
 const authCondition = authUser => !!authUser
 
-export default withAuthorization(authCondition)(Home)
+const ConnectedHome = connect(mapStateToProps)(Home)
+
+export default withAuthorization(authCondition)(ConnectedHome)
