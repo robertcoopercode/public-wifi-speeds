@@ -1,11 +1,30 @@
+// This line is required to tell the linter that the google variable will be available globally at runtime
+/*global google*/
+
 import React, { Component } from "react"
 import moment from "moment"
 import PropTypes from "prop-types"
 import * as firebase from "firebase"
 import PlacesAutocomplete from "react-places-autocomplete"
+import todoApp from "../reducers"
+import { bindActionCreators } from "redux"
+import { connect } from "react-redux"
+import { addEntry } from "../actions"
 
-// This line is required to tell the linter that the google variable will be available globally at runtime
-/*global google*/
+const mapStateToProps = function(state) {
+    return {
+        todos: state.todos,
+    }
+}
+
+const mapDispatchToProps = function(dispatch) {
+    return bindActionCreators(
+        {
+            addEntry: addEntry,
+        },
+        dispatch,
+    )
+}
 
 class AddEntryForm extends Component {
     constructor(props) {
@@ -66,24 +85,25 @@ class AddEntryForm extends Component {
             this.state.note,
         )
         if (Object.keys(errors).length === 0) {
+            const sanitizedInputs = this.props.sanitizeInputs(
+                this.state.location,
+                this.getCurrentDate(),
+                Date.now(),
+                this.state.download,
+                this.state.upload,
+                this.state.ping,
+                this.state.note,
+                this.context.authUser.uid,
+            )
             firebase
                 .database()
                 .ref()
                 .child("/entries/" + this.props.city)
-                .push(
-                    // Returns an object
-                    this.props.sanitizeInputs(
-                        this.state.location,
-                        this.getCurrentDate(),
-                        Date.now(),
-                        this.state.download,
-                        this.state.upload,
-                        this.state.ping,
-                        this.state.note,
-                        this.context.authUser.uid,
-                    ),
-                )
+                .push(sanitizedInputs)
             this.setState(this.INITIAL_STATE)
+            // Set Redux Store
+            this.props.addEntry(sanitizedInputs)
+
             this.entryForm.reset()
             // Trigger a change event on all form inputs (fixes a bug where the input doesn't detect a change in the input when submitting a second consecutive entry.
             this.entryForm
@@ -285,4 +305,4 @@ AddEntryForm.contextTypes = {
     authUser: PropTypes.object,
 }
 
-export default AddEntryForm
+export default connect(mapStateToProps, mapDispatchToProps)(AddEntryForm)

@@ -12,9 +12,11 @@
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
     "react-places-autocomplete": "^5.4.3",
+    "react-redux": "^5.0.6",
     "react-router-dom": "^4.2.2",
     "react-scripts": "1.0.14",
-    "react-social-login-buttons": "^1.3.5"
+    "react-social-login-buttons": "^1.3.5",
+    "redux": "^3.7.2"
   },
   "scripts": {
     "build-css": "node-sass-chokidar src/sass/App.scss -o src/",
@@ -25,5 +27,8 @@
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
     "deploy": "firebase deploy"
+  },
+  "devDependencies": {
+    "redux-devtools": "^3.4.1"
   }
 }
