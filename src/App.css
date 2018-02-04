@@ -324,19 +324,21 @@ input[type=number]::-webkit-outer-spin-button {
 .table-row-indicators {
   height: calc(100% - 1px);
   position: absolute;
-  padding-left: 40px;
+  width: 100%;
   right: 0;
   top: 0; }
   @media (min-width: 768px) {
     .table-row-indicators {
       height: calc(100% - 2px);
       right: 1px;
-      top: 1px; } }
+      top: 1px;
+      width: 300px; } }
 
 .table-row-indicator {
   width: 5px;
   height: 100%;
-  float: left; }
+  float: right;
+  position: relative; }
 
 .table-row-indicator--note {
   background-color: #209cee; }
@@ -351,4 +353,10 @@ input[type=number]::-webkit-outer-spin-button {
   height: 100%;
   background: rgba(0, 0, 0, 0.59);
   padding: 0 20px;
-  float: left; }
+  float: left;
+  width: 100%;
+  position: absolute;
+  right: 0; }
+  @media (min-width: 768px) {
+    .table-row-overlay {
+      width: 300px; } }

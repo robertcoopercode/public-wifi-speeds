@@ -150,6 +150,13 @@ class Entry extends Component {
                             onMouseOver={() =>
                                 this.setState({ showOverlay: true })
                             }
+                            onTouchEnd={() =>
+                                this.setState(prevState => {
+                                    return {
+                                        showOverlay: !prevState.showOverlay,
+                                    }
+                                })
+                            }
                             onMouseLeave={() =>
                                 this.state.showOverlay
                                     ? this.setState({ showOverlay: false })
