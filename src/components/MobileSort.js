@@ -75,14 +75,16 @@ class MobileSort extends Component {
                         <a
                             className={
                                 "dropdown-item" +
-                                (this.props.sortField === "timestamp"
+                                (this.props.sort.lastSorted === "timestamp" &&
+                                this.props.sort.currentOrder.timestamp ===
+                                    "descending"
                                     ? " is-active"
                                     : "")
                             }
                             onClick={() =>
                                 this.selectSort(
                                     "timestamp",
-                                    false,
+                                    "descending",
                                     "Most Recent",
                                 )
                             }
@@ -92,14 +94,16 @@ class MobileSort extends Component {
                         <a
                             className={
                                 "dropdown-item" +
-                                (this.props.sortField === "location"
+                                (this.props.sort.lastSorted === "location" &&
+                                this.props.sort.currentOrder.location ===
+                                    "ascending"
                                     ? " is-active"
                                     : "")
                             }
                             onClick={() =>
                                 this.selectSort(
                                     "location",
-                                    true,
+                                    "ascending",
                                     "Location (Alphabetical)",
                                 )
                             }
@@ -109,14 +113,16 @@ class MobileSort extends Component {
                         <a
                             className={
                                 "dropdown-item" +
-                                (this.props.sortField === "download"
+                                (this.props.sort.lastSorted === "download" &&
+                                this.props.sort.currentOrder.download ===
+                                    "descending"
                                     ? " is-active"
                                     : "")
                             }
                             onClick={() =>
                                 this.selectSort(
                                     "download",
-                                    false,
+                                    "descending",
                                     "Fastest Download",
                                 )
                             }
@@ -126,14 +132,16 @@ class MobileSort extends Component {
                         <a
                             className={
                                 "dropdown-item" +
-                                (this.props.sortField === "upload"
+                                (this.props.sort.lastSorted === "upload" &&
+                                this.props.sort.currentOrder.upload &&
+                                "descending"
                                     ? " is-active"
                                     : "")
                             }
                             onClick={() =>
                                 this.selectSort(
                                     "upload",
-                                    false,
+                                    "descending",
                                     "Fastest Upload",
                                 )
                             }
@@ -143,12 +151,18 @@ class MobileSort extends Component {
                         <a
                             className={
                                 "dropdown-item" +
-                                (this.props.sortField === "ping"
+                                (this.props.sort.lastSorted === "ping" &&
+                                this.props.sort.currentOrder.ping &&
+                                "ascending"
                                     ? " is-active"
                                     : "")
                             }
                             onClick={() =>
-                                this.selectSort("ping", true, "Fastest Ping")
+                                this.selectSort(
+                                    "ping",
+                                    "ascending",
+                                    "Fastest Ping",
+                                )
                             }
                         >
                             Fastest Ping

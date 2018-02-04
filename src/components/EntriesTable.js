@@ -8,12 +8,7 @@ function EntriesTable(props) {
             <div className={"table-row table-header"}>
                 <div className={"table-cell"} data-header="Date">
                     <span
-                        onClick={() =>
-                            props.handleSort(
-                                "timestamp",
-                                props.sortOrder.timestamp,
-                            )
-                        }
+                        onClick={() => props.handleSort("timestamp")}
                         className={"table-cell-header-text"}
                     >
                         Date
@@ -21,7 +16,11 @@ function EntriesTable(props) {
                             <i
                                 className={
                                     "fa fa-arrow-circle-" +
-                                    (props.sortOrder.timestamp ? "down" : "up")
+                                    (props.sort.lastSorted === "timestamp" &&
+                                    props.sort.currentOrder.timestamp ===
+                                        "descending"
+                                        ? "down"
+                                        : "up")
                                 }
                             />
                         </span>
@@ -29,12 +28,7 @@ function EntriesTable(props) {
                 </div>
                 <div className={"table-cell"} data-header="Location">
                     <span
-                        onClick={() =>
-                            props.handleSort(
-                                "location",
-                                props.sortOrder.location,
-                            )
-                        }
+                        onClick={() => props.handleSort("location")}
                         className={"table-cell-header-text"}
                     >
                         Location
@@ -42,7 +36,11 @@ function EntriesTable(props) {
                             <i
                                 className={
                                     "fa fa-arrow-circle-" +
-                                    (props.sortOrder.location ? "down" : "up")
+                                    (props.sort.lastSorted === "location" &&
+                                    props.sort.currentOrder.location ===
+                                        "descending"
+                                        ? "down"
+                                        : "up")
                                 }
                             />
                         </span>
@@ -50,12 +48,7 @@ function EntriesTable(props) {
                 </div>
                 <div className={"table-cell"} data-header="Download (Mbps)">
                     <span
-                        onClick={() =>
-                            props.handleSort(
-                                "download",
-                                props.sortOrder.download,
-                            )
-                        }
+                        onClick={() => props.handleSort("download")}
                         className={"table-cell-header-text"}
                     >
                         Download (Mbps)
@@ -63,7 +56,11 @@ function EntriesTable(props) {
                             <i
                                 className={
                                     "fa fa-arrow-circle-" +
-                                    (props.sortOrder.download ? "down" : "up")
+                                    (props.sort.lastSorted === "download" &&
+                                    props.sort.currentOrder.download ===
+                                        "descending"
+                                        ? "down"
+                                        : "up")
                                 }
                             />
                         </span>
@@ -71,9 +68,7 @@ function EntriesTable(props) {
                 </div>
                 <div className={"table-cell"} data-header="Upload (Mbps)">
                     <span
-                        onClick={() =>
-                            props.handleSort("upload", props.sortOrder.upload)
-                        }
+                        onClick={() => props.handleSort("upload")}
                         className={"table-cell-header-text"}
                     >
                         Upload (Mbps)
@@ -81,7 +76,11 @@ function EntriesTable(props) {
                             <i
                                 className={
                                     "fa fa-arrow-circle-" +
-                                    (props.sortOrder.upload ? "down" : "up")
+                                    (props.sort.lastSorted === "upload" &&
+                                    props.sort.currentOrder.upload ===
+                                        "descending"
+                                        ? "down"
+                                        : "up")
                                 }
                             />
                         </span>
@@ -89,9 +88,7 @@ function EntriesTable(props) {
                 </div>
                 <div className={"table-cell"} data-header="Ping (ms)">
                     <span
-                        onClick={() =>
-                            props.handleSort("ping", props.sortOrder.ping)
-                        }
+                        onClick={() => props.handleSort("ping")}
                         className={"table-cell-header-text"}
                     >
                         Ping (ms)
@@ -99,7 +96,11 @@ function EntriesTable(props) {
                             <i
                                 className={
                                     "fa fa-arrow-circle-" +
-                                    (props.sortOrder.ping ? "down" : "up")
+                                    (props.sort.lastSorted === "ping" &&
+                                    props.sort.currentOrder.ping ===
+                                        "descending"
+                                        ? "down"
+                                        : "up")
                                 }
                             />
                         </span>

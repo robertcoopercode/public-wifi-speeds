@@ -1,5 +1,8 @@
 import React, { Component } from "react"
 import { capitalize } from "../utils"
+import { connect } from "react-redux"
+import { selectCity } from "../actions"
+import { bindActionCreators } from "redux"
 
 class CitySelection extends Component {
     constructor(props) {
@@ -56,7 +59,7 @@ class CitySelection extends Component {
                         aria-haspopup="true"
                         aria-controls="dropdown-menu"
                     >
-                        <span>{capitalize(this.props.city)}</span>
+                        <span>{capitalize(this.props.selectedCity)}</span>
                         <span className="icon is-small">
                             <i
                                 className="fa fa-angle-down"
@@ -70,7 +73,7 @@ class CitySelection extends Component {
                         <a
                             className={
                                 "dropdown-item" +
-                                (this.props.city === "kingston"
+                                (this.props.selectedCity === "kingston"
                                     ? " is-active"
                                     : "")
                             }
@@ -86,7 +89,7 @@ class CitySelection extends Component {
                         <a
                             className={
                                 "dropdown-item" +
-                                (this.props.city === "montreal"
+                                (this.props.selectedCity === "montreal"
                                     ? " is-active"
                                     : "")
                             }
@@ -102,7 +105,7 @@ class CitySelection extends Component {
                         <a
                             className={
                                 "dropdown-item" +
-                                (this.props.city === "toronto"
+                                (this.props.selectedCity === "toronto"
                                     ? " is-active"
                                     : "")
                             }
@@ -118,7 +121,7 @@ class CitySelection extends Component {
                         <a
                             className={
                                 "dropdown-item" +
-                                (this.props.city === "ottawa"
+                                (this.props.selectedCity === "ottawa"
                                     ? " is-active"
                                     : "")
                             }
@@ -138,4 +141,19 @@ class CitySelection extends Component {
     }
 }
 
-export default CitySelection
+const mapStateToProps = function(state) {
+    return {
+        selectedCity: state.city.selectedCity,
+    }
+}
+
+const mapDispatchToProps = function(dispatch) {
+    return bindActionCreators(
+        {
+            selectCity: selectCity,
+        },
+        dispatch,
+    )
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(CitySelection)
