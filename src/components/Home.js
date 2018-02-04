@@ -1,15 +1,19 @@
 import React, { Component } from "react"
 import { connect } from "react-redux"
+
+import "../App.css"
+import { roundDecimals, capitalize } from "../utils"
+
 import CitySelection from "./CitySelection"
 import MobileSort from "./MobileSort"
 import EntriesTable from "./EntriesTable"
 import AddEntryForm from "./AddEntryForm"
 import Stats from "./Stats"
-import "../App.css"
 import withAuthorization from "./withAuthorization"
-import { roundDecimals, capitalize } from "../utils"
 
 import * as firebase from "firebase"
+import { sortEntries } from "../actions"
+import { bindActionCreators } from "redux"
 
 class Home extends Component {
     constructor(props) {
@@ -20,13 +24,8 @@ class Home extends Component {
             showNote: false,
             showStats: false,
             showDropdown: false,
-            city: "kingston",
-            cityCoordinates: {
-                latitude: 44.2312,
-                longitude: -76.486,
-            },
             sortField: "location",
-            sortAscending: true,
+            sortAscending: "ascending",
             sortOrder: {
                 timestamp: false,
                 location: false,
@@ -38,8 +37,9 @@ class Home extends Component {
     }
 
     componentDidMount() {
-        document.title = "Wifi Speeds - " + capitalize(this.props.selectedCity)
-        this.fetchEnries(this.props.selectedCity, "location")
+        document.title =
+            "Wifi Speeds - " + capitalize(this.props.city.selectedCity)
+        this.fetchEnries(this.props.city.selectedCity, "location", "ascending")
     }
 
     componentDidUpdate() {
@@ -52,10 +52,10 @@ class Home extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        if (this.props.selectedCity !== nextProps.selectedCity) {
+        if (this.props.city.selectedCity !== nextProps.city.selectedCity) {
             document.title =
-                "Wifi Speeds - " + capitalize(nextProps.selectedCity)
-            this.fetchEnries(nextProps.selectedCity, undefined, undefined)
+                "Wifi Speeds - " + capitalize(nextProps.city.selectedCity)
+            this.fetchEnries(nextProps.city.selectedCity, undefined, undefined)
         }
     }
 
@@ -138,9 +138,9 @@ class Home extends Component {
     }
 
     fetchEnries = (
-        city = this.props.selectedCity,
-        sortField = this.state.sortField,
-        sortAscending = this.state.sortAscending,
+        city = this.props.city.selectedCity,
+        sortField = "location",
+        sortDirection = "ascending",
     ) => {
         // Create reference to entries in Firebase Database for the current city being viewed
         const databaseReference = firebase
@@ -165,13 +165,11 @@ class Home extends Component {
                     entries.push(entry)
                 })
             }
-            if (!sortAscending) {
+            if (sortDirection === "descending") {
                 entries.reverse()
             }
             this.setState({
                 entries: entries,
-                sortField: sortField,
-                sortAscending: sortAscending,
             })
         })
     }
@@ -196,10 +194,20 @@ class Home extends Component {
             })
     }
 
-    handleSort = (field, direction) => {
-        let sortOrder = this.state.sortOrder
-        sortOrder[field] = !direction
-        this.setState({ sortOrder })
+    handleMobileSort = (field, direction) => {
+        this.props.handleSort(field, direction)
+        this.fetchEnries(undefined, field, direction)
+    }
+
+    handleSort = field => {
+        let direction = "ascending"
+        if (
+            this.props.sort.currentOrder[field] === "ascending" ||
+            this.props.sort.currentOrder[field] === undefined
+        ) {
+            direction = "descending"
+        }
+        this.props.handleSort(field, direction)
         this.fetchEnries(undefined, field, direction)
     }
 
@@ -217,7 +225,7 @@ class Home extends Component {
                 </div>
                 <div className={"home__summary-section summary-section"}>
                     <h2 className={"summary-section__title"}>
-                        Wifi Speeds for {this.props.selectedCity}
+                        Wifi Speeds for {this.props.city.selectedCity}
                     </h2>
                     <div className={"summary-section__actions"}>
                         <button
@@ -237,23 +245,22 @@ class Home extends Component {
                             Overall Stats
                         </button>
                         <MobileSort
-                            sortField={this.state.sortField}
-                            sortOrder={this.state.sortOrder}
-                            handleSort={this.handleSort}
+                            sort={this.props.sort}
+                            handleSort={this.handleMobileSort}
                         />
                     </div>
                 </div>
 
                 <EntriesTable
                     entries={this.state.entries}
-                    city={this.props.selectedCity}
+                    city={this.props.city.selectedCity}
                     fetchEnries={this.fetchEnries}
                     showNote={this.showNote}
                     sanitizeInputs={this.sanitizeInputs}
                     validateInputs={this.validateInputs}
-                    sortOrder={this.state.sortOrder}
+                    sort={this.props.sort}
                     handleSort={this.handleSort}
-                    cityCoordinates={this.props.selectedCityCoordinates}
+                    cityCoordinates={this.props.city.coordinates}
                 />
 
                 {/* Add Entry Form Modal */}
@@ -277,9 +284,9 @@ class Home extends Component {
                                     hideForm={() =>
                                         this.setState({ showForm: false })
                                     }
-                                    city={this.props.selectedCity}
+                                    city={this.props.city.selectedCity}
                                     cityCoordinates={
-                                        this.props.selectedCityCoordinates
+                                        this.props.city.coordinates
                                     }
                                     sanitizeInputs={this.sanitizeInputs}
                                     validateInputs={this.validateInputs}
@@ -346,13 +353,22 @@ class Home extends Component {
 
 const mapStateToProps = function(state) {
     return {
-        selectedCity: state.city.selectedCity,
-        selectedCityCoordinates: state.city.coordinates,
+        city: state.city,
+        sort: state.sort,
     }
+}
+
+const mapDispatchToProps = function(dispatch) {
+    return bindActionCreators(
+        {
+            handleSort: sortEntries,
+        },
+        dispatch,
+    )
 }
 
 const authCondition = authUser => !!authUser
 
-const ConnectedHome = connect(mapStateToProps)(Home)
+const ConnectedHome = connect(mapStateToProps, mapDispatchToProps)(Home)
 
 export default withAuthorization(authCondition)(ConnectedHome)

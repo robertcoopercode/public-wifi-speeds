@@ -4,6 +4,7 @@
 
 export const ADD_ENTRY = "ADD_ENTRY"
 export const SELECT_CITY = "SELECT_CITY"
+export const SORT_ENTRIES = "SORT_ENTRIES"
 
 /*
  * other constants
@@ -47,5 +48,13 @@ export function selectCity(selectedCity, coordinates) {
         type: SELECT_CITY,
         selectedCity,
         coordinates,
+    }
+}
+
+export function sortEntries(field, order) {
+    return {
+        type: SORT_ENTRIES,
+        field,
+        order,
     }
 }
