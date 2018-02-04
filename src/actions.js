@@ -2,6 +2,7 @@
  * action types
  */
 
+export const LOAD_ENTRIES = "LOAD_ENTRIES"
 export const ADD_ENTRY = "ADD_ENTRY"
 export const SELECT_CITY = "SELECT_CITY"
 export const SORT_ENTRIES = "SORT_ENTRIES"
@@ -20,26 +21,17 @@ export const SORT_ENTRIES = "SORT_ENTRIES"
  * action creators
  */
 
-export function addEntry(
-    location,
-    date,
-    timestamp,
-    download,
-    upload,
-    ping,
-    note,
-    uid,
-) {
+export function loadEntries(entries) {
+    return {
+        type: LOAD_ENTRIES,
+        entries,
+    }
+}
+
+export function addEntry(entry) {
     return {
         type: ADD_ENTRY,
-        location,
-        date,
-        timestamp,
-        download,
-        upload,
-        ping,
-        note,
-        uid,
+        entry,
     }
 }
 

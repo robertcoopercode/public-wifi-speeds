@@ -12,7 +12,7 @@ import Stats from "./Stats"
 import withAuthorization from "./withAuthorization"
 
 import * as firebase from "firebase"
-import { sortEntries } from "../actions"
+import { loadEntries, sortEntries } from "../actions"
 import { bindActionCreators } from "redux"
 
 class Home extends Component {
@@ -24,22 +24,37 @@ class Home extends Component {
             showNote: false,
             showStats: false,
             showDropdown: false,
-            sortField: "location",
-            sortAscending: "ascending",
-            sortOrder: {
-                timestamp: false,
-                location: false,
-                download: false,
-                upload: false,
-                ping: false,
-            },
         }
     }
 
     componentDidMount() {
         document.title =
             "Wifi Speeds - " + capitalize(this.props.city.selectedCity)
-        this.fetchEnries(this.props.city.selectedCity, "location", "ascending")
+
+        const databaseReference = firebase
+            .database()
+            .ref("/entries/" + this.props.city.selectedCity)
+            .orderByChild("location")
+
+        databaseReference.on("value", snapshot => {
+            let entries = []
+            if (!!snapshot.val()) {
+                snapshot.forEach(function(child) {
+                    let entry = {
+                        location: child.val().location,
+                        date: child.val().date,
+                        download: child.val().download,
+                        upload: child.val().upload,
+                        ping: child.val().ping,
+                        id: child.key,
+                        note: child.val().note,
+                        uid: child.val().uid,
+                    }
+                    entries.push(entry)
+                })
+            }
+            this.props.loadEntries(entries)
+        })
     }
 
     componentDidUpdate() {
@@ -55,7 +70,31 @@ class Home extends Component {
         if (this.props.city.selectedCity !== nextProps.city.selectedCity) {
             document.title =
                 "Wifi Speeds - " + capitalize(nextProps.city.selectedCity)
-            this.fetchEnries(nextProps.city.selectedCity, undefined, undefined)
+
+            const databaseReference = firebase
+                .database()
+                .ref("/entries/" + nextProps.city.selectedCity)
+                .orderByChild(this.props.sort.lastSorted)
+
+            databaseReference.on("value", snapshot => {
+                let entries = []
+                if (!!snapshot.val()) {
+                    snapshot.forEach(function(child) {
+                        let entry = {
+                            location: child.val().location,
+                            date: child.val().date,
+                            download: child.val().download,
+                            upload: child.val().upload,
+                            ping: child.val().ping,
+                            id: child.key,
+                            note: child.val().note,
+                            uid: child.val().uid,
+                        }
+                        entries.push(entry)
+                    })
+                }
+                this.props.loadEntries(entries)
+            })
         }
     }
 
@@ -137,15 +176,11 @@ class Home extends Component {
         return errors
     }
 
-    fetchEnries = (
-        city = this.props.city.selectedCity,
-        sortField = "location",
-        sortDirection = "ascending",
-    ) => {
+    fetchEnries = (sortField = "location", sortDirection = "ascending") => {
         // Create reference to entries in Firebase Database for the current city being viewed
         const databaseReference = firebase
             .database()
-            .ref("/entries/" + city)
+            .ref("/entries/" + this.props.city.selectedCity)
             .orderByChild(sortField)
         databaseReference.on("value", snapshot => {
             // Update React state when message is added at Firebase Database
@@ -168,19 +203,7 @@ class Home extends Component {
             if (sortDirection === "descending") {
                 entries.reverse()
             }
-            this.setState({
-                entries: entries,
-            })
-        })
-    }
-
-    selectCity = (name, coordinates) => {
-        this.setState({
-            city: name,
-            cityCoordinates: {
-                latitude: coordinates.latitude,
-                longitude: coordinates.longitude,
-            },
+            this.props.loadEntries(entries)
         })
     }
 
@@ -196,7 +219,7 @@ class Home extends Component {
 
     handleMobileSort = (field, direction) => {
         this.props.handleSort(field, direction)
-        this.fetchEnries(undefined, field, direction)
+        this.fetchEnries(field, direction)
     }
 
     handleSort = field => {
@@ -208,7 +231,7 @@ class Home extends Component {
             direction = "descending"
         }
         this.props.handleSort(field, direction)
-        this.fetchEnries(undefined, field, direction)
+        this.fetchEnries(field, direction)
     }
 
     render() {
@@ -220,7 +243,7 @@ class Home extends Component {
                         className="home__logout-button button is-danger"
                         onClick={this.signout}
                     >
-                        Signout
+                        Sign Out
                     </button>
                 </div>
                 <div className={"home__summary-section summary-section"}>
@@ -252,9 +275,8 @@ class Home extends Component {
                 </div>
 
                 <EntriesTable
-                    entries={this.state.entries}
+                    entries={this.props.entries}
                     city={this.props.city.selectedCity}
-                    fetchEnries={this.fetchEnries}
                     showNote={this.showNote}
                     sanitizeInputs={this.sanitizeInputs}
                     validateInputs={this.validateInputs}
@@ -313,7 +335,7 @@ class Home extends Component {
                         onClick={() => this.setState({ showStats: false })}
                     />
                     <div className="modal-content">
-                        <Stats entries={this.state.entries} />
+                        <Stats entries={this.props.entries} />
                     </div>
                     <button
                         className="modal-close is-large"
@@ -355,6 +377,7 @@ const mapStateToProps = function(state) {
     return {
         city: state.city,
         sort: state.sort,
+        entries: state.entries,
     }
 }
 
@@ -362,6 +385,7 @@ const mapDispatchToProps = function(dispatch) {
     return bindActionCreators(
         {
             handleSort: sortEntries,
+            loadEntries: loadEntries,
         },
         dispatch,
     )
