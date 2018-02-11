@@ -1,21 +1,20 @@
 import React, { Component } from "react"
 import { connect } from "react-redux"
-
-import "../App.css"
-import { roundDecimals, capitalize } from "../utils"
-
-import CitySelection from "./CitySelection"
-import MobileSort from "./MobileSort"
-import EntriesTable from "./EntriesTable"
-import AddEntryForm from "./AddEntryForm"
-import Stats from "./Stats"
-import withAuthorization from "./withAuthorization"
-
-import * as firebase from "firebase"
-import { loadEntries, sortEntries } from "../actions"
 import { bindActionCreators } from "redux"
+import * as firebase from "firebase"
 
-class Home extends Component {
+import { roundDecimals, capitalize } from "../utils"
+import { loadEntries, sortEntries } from "../actions"
+
+import withAuthorization from "./withAuthorization"
+import EntriesTable from "../components/EntriesTable"
+import PageHeader from "../components/PageHeader"
+import EntriesHeader from "../components/EntriesHeader"
+import AddEntryFormModal from "../components/AddEntryFormModal"
+import StatisticsModal from "../components/StatisticsModal"
+import EntryNoteModal from "../components/EntryNoteModal"
+
+class HomePage extends Component {
     constructor(props) {
         super(props)
         this.state = {
@@ -237,43 +236,14 @@ class Home extends Component {
     render() {
         return (
             <div className={"home"}>
-                <div className={"home__top-section"}>
-                    <CitySelection />
-                    <button
-                        className="home__logout-button button is-danger"
-                        onClick={this.signout}
-                    >
-                        Sign Out
-                    </button>
-                </div>
-                <div className={"home__summary-section summary-section"}>
-                    <h2 className={"summary-section__title"}>
-                        Wifi Speeds for {this.props.city.selectedCity}
-                    </h2>
-                    <div className={"summary-section__actions"}>
-                        <button
-                            className={
-                                "summary-section__action-button button is-primary"
-                            }
-                            onClick={() => this.setState({ showForm: true })}
-                        >
-                            Add New Entry
-                        </button>
-                        <button
-                            className={
-                                "summary-section__action-button button is-info"
-                            }
-                            onClick={() => this.setState({ showStats: true })}
-                        >
-                            Overall Stats
-                        </button>
-                        <MobileSort
-                            sort={this.props.sort}
-                            handleSort={this.handleMobileSort}
-                        />
-                    </div>
-                </div>
-
+                <PageHeader signout={this.signout} />
+                <EntriesHeader
+                    selectedCity={this.props.city.selectedCity}
+                    showEntryForm={() => this.setState({ showForm: true })}
+                    showStats={() => this.setState({ showStats: true })}
+                    sort={this.props.sort}
+                    handleMobileSort={this.handleMobileSort}
+                />
                 <EntriesTable
                     entries={this.props.entries}
                     city={this.props.city.selectedCity}
@@ -284,90 +254,24 @@ class Home extends Component {
                     handleSort={this.handleSort}
                     cityCoordinates={this.props.city.coordinates}
                 />
-
-                {/* Add Entry Form Modal */}
-                <div
-                    className={
-                        "modal modal--form" +
-                        (this.state.showForm ? " is-active" : "")
-                    }
-                >
-                    <div
-                        className="modal-background"
-                        onClick={() => this.setState({ showForm: false })}
-                    />
-                    <div className="modal-content">
-                        <article className="message is-dark">
-                            <div className="message-header">
-                                <p>Add New Entry</p>
-                            </div>
-                            <div className="message-body">
-                                <AddEntryForm
-                                    hideForm={() =>
-                                        this.setState({ showForm: false })
-                                    }
-                                    city={this.props.city.selectedCity}
-                                    cityCoordinates={
-                                        this.props.city.coordinates
-                                    }
-                                    sanitizeInputs={this.sanitizeInputs}
-                                    validateInputs={this.validateInputs}
-                                />
-                            </div>
-                        </article>
-                    </div>
-                    <button
-                        className="modal-close is-large"
-                        aria-label="close"
-                        onClick={() => this.setState({ showForm: false })}
-                    />
-                </div>
-
-                {/* Statistics Modal */}
-                <div
-                    className={
-                        "modal modal--stats" +
-                        (this.state.showStats ? " is-active" : "")
-                    }
-                >
-                    <div
-                        className="modal-background"
-                        onClick={() => this.setState({ showStats: false })}
-                    />
-                    <div className="modal-content">
-                        <Stats entries={this.props.entries} />
-                    </div>
-                    <button
-                        className="modal-close is-large"
-                        aria-label="close"
-                        onClick={() => this.setState({ showStats: false })}
-                    />
-                </div>
-
-                {/* Note Modal */}
-                <div
-                    className={
-                        "modal modal--note" +
-                        (this.state.showNote ? " is-active" : "")
-                    }
-                >
-                    <div
-                        className="modal-background"
-                        onClick={() => this.setState({ showNote: false })}
-                    />
-                    <div className="modal-content">
-                        <article className="message">
-                            <div className="message-body">
-                                {this.state.note}
-                            </div>
-                        </article>
-                    </div>
-                    <button
-                        className="modal-close is-large"
-                        aria-label="close"
-                        onClick={() => this.setState({ showNote: false })}
-                    />
-                </div>
+                <AddEntryFormModal
+                    showForm={this.state.showForm}
+                    hideModal={() => this.setState({ showForm: false })}
+                    selectedCity={this.props.city.selectedCity}
+                    coordinates={this.props.city.coordinates}
+                    sanitizeInputs={this.sanitizeInputs}
+                    validateInputs={this.validateInputs}
+                />
+                <StatisticsModal
+                    showStats={this.state.showStats}
+                    hideModal={() => this.setState({ showStats: false })}
+                    entries={this.props.entries}
+                />
+                <EntryNoteModal
+                    showNote={this.state.showNote}
+                    hideModal={() => this.setState({ showNote: false })}
+                    note={this.state.note}
+                />
             </div>
         )
     }
@@ -393,6 +297,6 @@ const mapDispatchToProps = function(dispatch) {
 
 const authCondition = authUser => !!authUser
 
-const ConnectedHome = connect(mapStateToProps, mapDispatchToProps)(Home)
+const ConnectedHomePage = connect(mapStateToProps, mapDispatchToProps)(HomePage)
 
-export default withAuthorization(authCondition)(ConnectedHome)
+export default withAuthorization(authCondition)(ConnectedHomePage)

@@ -7,7 +7,7 @@ import {
 } from "react-social-login-buttons"
 import * as firebase from "firebase"
 
-class Login extends Component {
+class LoginPage extends Component {
     constructor(props) {
         super(props)
         this.state = {
@@ -182,4 +182,4 @@ class Login extends Component {
     }
 }
 
-export default Login
+export default LoginPage

@@ -2,17 +2,19 @@ import React, { Fragment } from "react"
 import "bulma/css/bulma.css"
 import "../App.css"
 import withAuthentication from "./withAuthentication"
-import Home from "./Home"
-import Login from "./Login"
+import HomePage from "./HomePage"
+import LoginPage from "./LoginPage"
 import { Route } from "react-router-dom"
 import PropTypes from "prop-types"
 
-const App = (props, { authUser }) => (
-    <Fragment>
-        <Route exact path="/" render={() => <Home />} />
-        <Route path="/login" component={Login} />
-    </Fragment>
-)
+function App() {
+    return (
+        <Fragment>
+            <Route exact path="/" render={() => <HomePage />} />
+            <Route path="/login" component={LoginPage} />
+        </Fragment>
+    )
+}
 
 App.contextTypes = {
     authUser: PropTypes.object,
