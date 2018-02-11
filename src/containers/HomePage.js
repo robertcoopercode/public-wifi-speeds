@@ -13,6 +13,7 @@ import EntriesHeader from "../components/EntriesHeader"
 import AddEntryFormModal from "../components/AddEntryFormModal"
 import StatisticsModal from "../components/StatisticsModal"
 import EntryNoteModal from "../components/EntryNoteModal"
+import HomeContent from "../components/HomeContent"
 
 class HomePage extends Component {
     constructor(props) {
@@ -235,8 +236,9 @@ class HomePage extends Component {
 
     render() {
         return (
-            <div className={"home"}>
+            <div className="home">
                 <PageHeader signout={this.signout} />
+                <HomeContent />
                 <EntriesHeader
                     selectedCity={this.props.city.selectedCity}
                     showEntryForm={() => this.setState({ showForm: true })}
