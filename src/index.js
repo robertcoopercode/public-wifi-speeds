@@ -6,7 +6,7 @@ import { createStore } from "redux"
 import { Provider } from "react-redux"
 
 import "./fire"
-import App from "./components/App"
+import App from "./containers/App"
 import appReducers from "./reducers"
 
 const store = createStore(
