@@ -1,18 +1,22 @@
 import React, { Component } from "react"
-import CitySelection from "./CitySelection"
 import PropTypes from "prop-types"
+import styled from "styled-components"
+
+import CitySelection from "./CitySelection"
 
 function PageHeader(props) {
+    const Header = styled.div`
+        display: flex;
+        justify-content: space-between;
+        margin-top: 20px;
+    `
     return (
-        <div className={"home__top-section"}>
+        <Header>
             <CitySelection />
-            <button
-                className="home__logout-button button is-danger"
-                onClick={props.signout}
-            >
+            <button className="button is-danger" onClick={props.signout}>
                 Sign Out
             </button>
-        </div>
+        </Header>
     )
 }
 
