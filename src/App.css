@@ -90,13 +90,6 @@ input[type=number]::-webkit-outer-spin-button {
   margin-top: 40px;
   display: block; }
 
-.home {
-  color: #ffffff;
-  width: 1200px;
-  max-width: 100%;
-  margin: 0 auto;
-  padding: 0 20px 40px; }
-
 .home__summary-section {
   margin-top: 35px; }
   @media (max-width: 700px) {

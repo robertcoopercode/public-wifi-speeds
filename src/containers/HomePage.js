@@ -2,6 +2,7 @@ import React, { Component } from "react"
 import { connect } from "react-redux"
 import { bindActionCreators } from "redux"
 import * as firebase from "firebase"
+import styled from "styled-components"
 
 import { roundDecimals, capitalize } from "../utils"
 import { loadEntries, sortEntries } from "../actions"
@@ -235,8 +236,17 @@ class HomePage extends Component {
     }
 
     render() {
+        // TODO: Move this out into a presentational component
+        const Home = styled.div`
+            color: #ffffff;
+            width: 1200px;
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 0 20px 40px;
+        `
+
         return (
-            <div className="home">
+            <Home>
                 <PageHeader signout={this.signout} />
                 <HomeContent />
                 <EntriesHeader
@@ -274,7 +284,7 @@ class HomePage extends Component {
                     hideModal={() => this.setState({ showNote: false })}
                     note={this.state.note}
                 />
-            </div>
+            </Home>
         )
     }
 }
