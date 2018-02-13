@@ -1,39 +1,76 @@
-import React, { Component } from "react"
-import PropTypes from "prop-types"
+import React from "react"
+import styled from "styled-components"
+
+import { media } from "../constants"
 
 import MobileSort from "./MobileSort"
 
 function EntriesHeader(props) {
+    const Header = styled.div`
+        margin-top: 10px;
+
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+
+        ${media.medium`
+            margin-top: 35px;
+            flex-direction: row;
+            justify-content: space-between;
+        `};
+    `
+    const Title = styled.h2`
+        margin: 10px 0;
+        font-size: 1.5rem;
+        text-align: center;
+
+        ${media.small`
+            font-size: 1.75rem;
+            white-space: nowrap;
+        `};
+    `
+
+    const Actions = styled.div`
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        justify-content: center;
+
+        ${media.small`
+            flex-direction: row;
+            flex-wrap: nowrap;
+        `};
+    `
+
+    const Button = styled.button`
+        margin: 5px 10px;
+
+        ${media.small`
+            &:first-child {
+              margin-left: 0;
+            };
+        `};
+    `
+
     return (
-        <div className={"home__summary-section summary-section"}>
-            <h2 className={"summary-section__title"}>
-                Wifi Speeds for {props.selectedCity}
-            </h2>
-            <div className={"summary-section__actions"}>
-                <button
-                    className={
-                        "summary-section__action-button button is-primary"
-                    }
+        <Header>
+            <Title>Wifi Speeds for {props.selectedCity}</Title>
+            <Actions>
+                <Button
+                    className={"button is-primary"}
                     onClick={props.showEntryForm}
                 >
                     Add New Entry
-                </button>
-                <button
-                    className={"summary-section__action-button button is-info"}
-                    onClick={props.showStats}
-                >
-                    Overall Stats
-                </button>
+                </Button>
+                {/* TODO: Add a conditional that only renders this on mobile/small screen widths */}
                 <MobileSort
                     sort={props.sort}
                     handleSort={props.handleMobileSort}
                 />
-            </div>
-        </div>
+            </Actions>
+        </Header>
     )
 }
-
-EntriesHeader.propTypes = {}
-EntriesHeader.defaultProps = {}
 
 export default EntriesHeader

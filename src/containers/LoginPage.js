@@ -6,6 +6,40 @@ import {
     GithubLoginButton,
 } from "react-social-login-buttons"
 import * as firebase from "firebase"
+import styled from "styled-components"
+
+const Login = styled.div`
+    align-self: center;
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 0 20px;
+    width: 100%;
+`
+const Description = styled.p`
+    font-size: 1.5rem;
+    color: #ffffff;
+    text-align: center;
+`
+const Error = styled.article`
+    width: 600px;
+    max-width: 100%;
+    margin-bottom: 0 !important;
+`
+const LinkAccountsButton = styled.button`
+    margin-top: 20px;
+    margin-bottom: 10px;
+`
+const AuthenticationButtons = styled.div`
+    margin: 1rem 0;
+`
+const CoffeeImage = styled.img`
+    width: 80px;
+    margin-top: 40px;
+    display: block;
+`
 
 class LoginPage extends Component {
     constructor(props) {
@@ -117,28 +151,28 @@ class LoginPage extends Component {
 
     render() {
         return (
-            <div className="login content">
-                <p className="login__text">
+            <Login className="content">
+                <Description>
                     Login with one of the following providers.
-                </p>
+                </Description>
                 {this.state.error ? (
                     <Fragment>
-                        <article className="login__error message is-danger">
+                        <Error className="message is-danger">
                             <div className="message-body">
                                 {this.state.error}
                             </div>
-                        </article>
+                        </Error>
                         {this.state.pendingCred ? (
-                            <button
-                                className="login__link-accounts button is-primary"
+                            <LinkAccountsButton
+                                className="button is-primary"
                                 onClick={this.handleAccountLink}
                             >
                                 Link Accounts
-                            </button>
+                            </LinkAccountsButton>
                         ) : null}
                     </Fragment>
                 ) : null}
-                <div className="login__authentication-buttons">
+                <AuthenticationButtons>
                     <FacebookLoginButton
                         style={{
                             boxShadow: "none",
@@ -171,13 +205,9 @@ class LoginPage extends Component {
                         }}
                         onClick={() => this.signin("Github")}
                     />
-                </div>
-                <img
-                    className="login__coffee"
-                    src="/coffee.png"
-                    alt="steaming coffee"
-                />
-            </div>
+                </AuthenticationButtons>
+                <CoffeeImage src="/coffee.png" alt="steaming coffee" />
+            </Login>
         )
     }
 }

@@ -1,4 +1,7 @@
 import React, { Component } from "react"
+import styled from "styled-components"
+
+import { media } from "../constants"
 
 class MobileSort extends Component {
     constructor(props) {
@@ -40,13 +43,19 @@ class MobileSort extends Component {
     }
 
     render() {
+        const Dropdown = styled.div`
+            ${media.medium`
+                display: none !important;
+            `};
+        `
         return (
-            <div
+            <Dropdown
                 className={
-                    "summary-section__action-button dropdown dropdown--sort" +
-                    (this.state.showDropdown ? " is-active" : "")
+                    "dropdown" + (this.state.showDropdown ? " is-active" : "")
                 }
-                ref={this.setDropdownRef}
+                innerRef={x => {
+                    this.setDropdownRef = x
+                }}
             >
                 <div
                     className="dropdown-trigger"
@@ -169,7 +178,7 @@ class MobileSort extends Component {
                         </a>
                     </div>
                 </div>
-            </div>
+            </Dropdown>
         )
     }
 }

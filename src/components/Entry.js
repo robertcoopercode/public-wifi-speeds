@@ -1,32 +1,202 @@
+// This line is required to tell the linter that the google variable will be available globally at runtime
+/*global google*/
+
 import React, { Component, Fragment } from "react"
 import moment from "moment"
 import * as firebase from "firebase"
 import PropTypes from "prop-types"
 import PlacesAutocomplete from "react-places-autocomplete"
+import styled from "styled-components"
 
-// This line is required to tell the linter that the google variable will be available globally at runtime
-/*global google*/
+import { colors, media } from "../constants"
 
-class Entry extends Component {
-    constructor(props) {
-        super(props)
-        this.state = {
-            showOverlay: false,
-            errors: null,
-            locationSelected: true,
-            editEntry: false,
-        }
+const Row = styled.div`
+    position: relative;
+    width: 100%;
+    border: 2px solid black;
+    border-bottom: none;
+    &:nth-of-type(even) {
+        background-color: ${colors.darkTableRow};
+    }
+    &:nth-of-type(odd) {
+        background-color: ${colors.lightTableRow};
+    }
+    &:nth-of-type(1) {
+        background-color: #ffdd57;
     }
 
-    componentDidMount() {
-        this.setState({
-            date: this.props.entry.date,
-            location: this.props.entry.location,
-            download: this.props.entry.download,
-            upload: this.props.entry.upload,
-            ping: this.props.entry.ping,
-            note: this.props.entry.note,
-        })
+    ${media.medium`
+            border: none;
+            display: flex;
+            flex-flow: row nowrap;
+            &:nth-of-type(even) {
+            background-color: $light-color;
+            }
+            &:nth-of-type(odd) {
+            background-color: $dark-color;
+            }
+            &:nth-of-type(1) {
+            background-color: #ffdd57;
+            }
+        `};
+`
+
+const Cell = styled.div`
+    display: flex;
+    position: relative;
+    flex-wrap: nowrap;
+    flex-direction: row;
+    padding: 0 !important;
+    word-break: break-word;
+    line-height: 1.5;
+    border-bottom: 1px solid black;
+
+    &[data-header="Location"] {
+        flex-grow: 3;
+    }
+    &:before {
+        content: attr(data-header);
+        width: 40%;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        padding: 10px;
+        background-color: #ffdd57;
+        ${media.small`
+                width: 30%;
+              `};
+    }
+    ${media.medium`
+                border: 1px solid #2D365B;
+              padding: 0.5em;
+              flex-grow: 1;
+              flex-basis: 0;
+              &:before {
+                content: none;
+              }
+            `};
+`
+const DateCell = styled.div`
+    padding: 0.5em !important;
+    width: 100%;
+`
+const EditCell = Cell.extend`
+    padding: 0 !important;
+    background-color: rgba(0, 209, 178, 0.22);
+`
+const CellInput = styled.input`
+    background: none;
+    border: none !important;
+    padding: 0.5em;
+    font-size: 1rem;
+    width: 100%;
+    height: 100%;
+`
+const ErrorCell = Cell.extend`
+    background-color: rgba(255, 56, 96, 0.25);
+`
+const CellText = styled.span`
+    padding: 0.5em;
+    width: 100%;
+`
+const Indicators = styled.div`
+    height: calc(100% - 1px);
+    position: absolute;
+    width: 100%;
+    right: 0;
+    top: 0;
+
+    ${media.medium`
+                height: calc(100% - 2px);
+                right: 1px;
+                top: 1px;
+                width: 300px;
+            `};
+`
+const Overlay = styled.div`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.59);
+    padding: 0 20px;
+    float: left;
+    width: 100%;
+    position: absolute;
+    right: 0;
+
+    ${media.medium`
+                width: 300px;
+            `};
+`
+const Form = styled.form`
+    display: flex;
+    flex-wrap: nowrap;
+    width: 100%;
+    flex-direction: column;
+
+    ${media.medium`
+                flex-direction: row;
+            `};
+`
+const Indicator = styled.div`
+    width: 5px;
+    height: 100%;
+    float: right;
+    position: relative;
+`
+const NoteIndicator = Indicator.extend`
+    background-color: #209cee;
+`
+const UserEntryIndicator = Indicator.extend`
+    background-color: #00d1b2;
+`
+const Button = styled.button`
+    margin: 0 10px;
+`
+const SaveContainer = styled.div`
+    position: absolute !important;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 42px;
+    bottom: -41px;
+    z-index: 1;
+    width: 100%;
+    background-color: #2d365b;
+`
+const Error = styled.p`
+    display: none;
+
+    ${media.medium`
+            top: -32px;
+            font-size: 0.75rem;
+            position: absolute;
+            border-radius: 5px 5px 0 0;
+            height: 30px;
+            background-color: #FF385E;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            width: 98%;
+            left: 1%;
+            justify-content: center;
+            margin-top: 0;
+        `};
+`
+
+class Entry extends Component {
+    state = {
+        showOverlay: false,
+        errors: null,
+        locationSelected: true,
+        editEntry: false,
+        date: this.props.entry.date,
+        location: this.props.entry.location,
+        download: this.props.entry.download,
+        upload: this.props.entry.upload,
+        ping: this.props.entry.ping,
+        note: this.props.entry.note,
     }
 
     deleteItem = id => {
@@ -110,44 +280,27 @@ class Entry extends Component {
 
     render() {
         return (
-            <div className={"table-row"}>
+            <Row>
                 {!this.state.editEntry ? (
                     <Fragment>
-                        <div className={"table-cell"} data-header="Date">
-                            <span className={"table-cell-text"}>
-                                {this.props.entry.date}
-                            </span>
-                        </div>
-                        <div className={"table-cell"} data-header="Location">
-                            <span className={"table-cell-text"}>
-                                {this.props.entry.location}
-                            </span>
-                        </div>
-                        <div
-                            className={"table-cell"}
-                            data-header="Download (Mbps)"
-                        >
-                            <span className={"table-cell-text"}>
-                                {this.props.entry.download}
-                            </span>
-                        </div>
-                        <div
-                            className={"table-cell"}
-                            data-header="Upload (Mbps)"
-                        >
-                            <span className={"table-cell-text"}>
-                                {this.props.entry.upload}
-                            </span>
-                        </div>
-                        <div className={"table-cell"} data-header="Ping (ms)">
-                            <span className={"table-cell-text"}>
-                                {this.props.entry.ping}
-                            </span>
-                        </div>
+                        <Cell data-header="Date">
+                            <CellText>{this.props.entry.date}</CellText>
+                        </Cell>
+                        <Cell data-header="Location">
+                            <CellText>{this.props.entry.location}</CellText>
+                        </Cell>
+                        <Cell data-header="Download (Mbps)">
+                            <CellText>{this.props.entry.download}</CellText>
+                        </Cell>
+                        <Cell data-header="Upload (Mbps)">
+                            <CellText>{this.props.entry.upload}</CellText>
+                        </Cell>
+                        <Cell data-header="Ping (ms)">
+                            <CellText>{this.props.entry.ping}</CellText>
+                        </Cell>
 
-                        <div
-                            className={"table-row-indicators"}
-                            onMouseOver={() =>
+                        <Indicators
+                            onMouseEnter={() =>
                                 this.setState({ showOverlay: true })
                             }
                             onTouchEnd={() =>
@@ -167,16 +320,15 @@ class Entry extends Component {
                             (this.props.entry.note.length > 0 ||
                                 this.context.authUser.uid ===
                                     this.props.entry.uid) ? (
-                                <div
-                                    className="table-row-overlay"
+                                <Overlay
                                     onMouseLeave={() =>
                                         this.setState({ showOverlay: false })
                                     }
                                 >
                                     {this.props.entry.note.length > 0 ? (
-                                        <button
+                                        <Button
                                             className={
-                                                "table-row-button button is-small is-info"
+                                                "button is-small is-info"
                                             }
                                             onClick={() =>
                                                 this.props.showNote(
@@ -185,13 +337,13 @@ class Entry extends Component {
                                             }
                                         >
                                             Note
-                                        </button>
+                                        </Button>
                                     ) : null}
                                     {this.context.authUser.uid ===
                                     this.props.entry.uid ? (
                                         <Fragment>
-                                            <button
-                                                className="table-row-button button is-small is-primary"
+                                            <Button
+                                                className="button is-small is-primary"
                                                 onClick={() =>
                                                     this.setState({
                                                         editEntry: true,
@@ -200,9 +352,9 @@ class Entry extends Component {
                                                 }
                                             >
                                                 Edit
-                                            </button>
-                                            <button
-                                                className="table-row-button button is-small is-danger"
+                                            </Button>
+                                            <Button
+                                                className="button is-small is-danger"
                                                 onClick={() =>
                                                     this.deleteItem(
                                                         this.props.entry.id,
@@ -210,173 +362,206 @@ class Entry extends Component {
                                                 }
                                             >
                                                 Delete
-                                            </button>
+                                            </Button>
                                         </Fragment>
                                     ) : null}
-                                </div>
+                                </Overlay>
                             ) : null}
 
                             {this.props.entry.note.length > 0 ? (
-                                <div
-                                    className={
-                                        "table-row-indicator table-row-indicator--note"
-                                    }
-                                />
+                                <NoteIndicator />
                             ) : null}
                             {this.context.authUser.uid ===
                             this.props.entry.uid ? (
-                                <div
-                                    className={
-                                        "table-row-indicator table-row-indicator--user-entry"
-                                    }
-                                />
+                                <UserEntryIndicator />
                             ) : null}
-                        </div>
+                        </Indicators>
                     </Fragment>
                 ) : (
-                    <form
-                        className={"table-row--form"}
-                        ref={element => (this.editForm = element)}
+                    <Form
+                        innerRef={element => {
+                            this.editForm = element
+                        }}
                         onSubmit={e => this.updateItem(e, this.props.entry.id)}
                     >
-                        <div
-                            className={"table-cell table-cell--edit-date"}
-                            data-header="Date"
-                        >
-                            <span className={"table-cell--date"}>
-                                {this.props.entry.date}
-                            </span>
-                        </div>
-                        <div
-                            className={
-                                "table-cell" +
-                                (this.state.errors && this.state.errors.location
-                                    ? " table-cell--danger"
-                                    : " table-cell--edit")
-                            }
-                            data-header="Location"
-                        >
-                            {this.state.errors && this.state.errors.location ? (
-                                <p className="table-cell--error">Invalid</p>
-                            ) : null}
-                            <PlacesAutocomplete
-                                inputProps={{
-                                    value: this.state.location,
-                                    onChange: location =>
+                        <Cell data-header="Date">
+                            <DateCell>{this.props.entry.date}</DateCell>
+                        </Cell>
+                        {this.state.errors && this.state.errors.location ? (
+                            <ErrorCell data-header="Location">
+                                <Error>Invalid</Error>
+                                <PlacesAutocomplete
+                                    inputProps={{
+                                        value: this.state.location,
+                                        onChange: location =>
+                                            this.setState({
+                                                location,
+                                                locationSelected: true,
+                                            }),
+                                        maxLength: "150",
+                                        required: true,
+                                        "data-name": "location",
+                                    }}
+                                    classNames={{
+                                        root: "autocomplete",
+                                        autocompleteContainer:
+                                            "autocomplete-results",
+                                        input: "autocomplete-table-input",
+                                    }}
+                                    googleLogo={false}
+                                    options={{
+                                        location: new google.maps.LatLng(
+                                            this.props.cityCoordinates.latitude,
+                                            this.props.cityCoordinates.longitude,
+                                        ),
+                                        radius: 20000,
+                                        type: ["address"],
+                                    }}
+                                    onSelect={this.handleLocationSelect}
+                                />
+                            </ErrorCell>
+                        ) : (
+                            <EditCell data-header="Location">
+                                <PlacesAutocomplete
+                                    inputProps={{
+                                        value: this.state.location,
+                                        onChange: location =>
+                                            this.setState({
+                                                location,
+                                                locationSelected: true,
+                                            }),
+                                        maxLength: "150",
+                                        required: true,
+                                        "data-name": "location",
+                                    }}
+                                    classNames={{
+                                        root: "autocomplete",
+                                        autocompleteContainer:
+                                            "autocomplete-results",
+                                        input: "autocomplete-table-input",
+                                    }}
+                                    googleLogo={false}
+                                    options={{
+                                        location: new google.maps.LatLng(
+                                            this.props.cityCoordinates.latitude,
+                                            this.props.cityCoordinates.longitude,
+                                        ),
+                                        radius: 20000,
+                                        type: ["address"],
+                                    }}
+                                    onSelect={this.handleLocationSelect}
+                                />
+                            </EditCell>
+                        )}
+                        {this.state.errors && this.state.errors.download ? (
+                            <ErrorCell data-header="Download">
+                                <Error>Invalid</Error>
+                                <CellInput
+                                    data-name="download"
+                                    type={"number"}
+                                    min="0"
+                                    max="1000"
+                                    step="0.01"
+                                    value={this.state.download}
+                                    onChange={e =>
                                         this.setState({
-                                            location,
-                                            locationSelected: true,
-                                        }),
-                                    maxLength: "150",
-                                    required: true,
-                                    "data-name": "location",
-                                }}
-                                classNames={{
-                                    root: "table-cell__autocomplete",
-                                    autocompleteContainer:
-                                        "table-cell__autocomplete-results",
-                                    input: "table-cell--input",
-                                }}
-                                googleLogo={false}
-                                options={{
-                                    location: new google.maps.LatLng(
-                                        this.props.cityCoordinates.latitude,
-                                        this.props.cityCoordinates.longitude,
-                                    ),
-                                    radius: 20000,
-                                    type: ["address"],
-                                }}
-                                onSelect={this.handleLocationSelect}
-                            />
-                        </div>
-                        <div
-                            className={
-                                "table-cell" +
-                                (this.state.errors && this.state.errors.download
-                                    ? " table-cell--danger"
-                                    : " table-cell--edit")
-                            }
-                            data-header="Download"
-                        >
-                            {this.state.errors && this.state.errors.download ? (
-                                <p className="table-cell--error">Invalid</p>
-                            ) : null}
-                            <input
-                                className={"table-cell--input"}
-                                data-name="download"
-                                type={"number"}
-                                min="0"
-                                max="1000"
-                                step="0.01"
-                                value={this.state.download}
-                                onChange={e =>
-                                    this.setState({ download: e.target.value })
-                                }
-                            />
-                        </div>
-                        <div
-                            className={
-                                "table-cell" +
-                                (this.state.errors && this.state.errors.upload
-                                    ? " table-cell--danger"
-                                    : " table-cell--edit")
-                            }
-                            data-header="Upload"
-                        >
-                            {this.state.errors && this.state.errors.upload ? (
-                                <p className="table-cell--error">Invalid</p>
-                            ) : null}
-                            <input
-                                className={"table-cell--input"}
-                                data-name="upload"
-                                type="number"
-                                min="0"
-                                max="1000"
-                                step="0.01"
-                                value={this.state.upload}
-                                onChange={e =>
-                                    this.setState({ upload: e.target.value })
-                                }
-                            />
-                        </div>
-                        <div
-                            className={
-                                "table-cell" +
-                                (this.state.errors && this.state.errors.ping
-                                    ? " table-cell--danger"
-                                    : " table-cell--edit")
-                            }
-                            data-header="Ping"
-                        >
-                            {this.state.errors && this.state.errors.ping ? (
-                                <p className="table-cell--error">Invalid</p>
-                            ) : null}
-                            <input
-                                className={"table-cell--input"}
-                                data-name="ping"
-                                type={"number"}
-                                min="0"
-                                max="1000"
-                                step="0.01"
-                                value={this.state.ping}
-                                onChange={e =>
-                                    this.setState({ ping: e.target.value })
-                                }
-                            />
-                        </div>
-                        <div className={"table-save-container"}>
+                                            download: e.target.value,
+                                        })
+                                    }
+                                />
+                            </ErrorCell>
+                        ) : (
+                            <EditCell data-header="Download">
+                                <CellInput
+                                    data-name="download"
+                                    type={"number"}
+                                    min="0"
+                                    max="1000"
+                                    step="0.01"
+                                    value={this.state.download}
+                                    onChange={e =>
+                                        this.setState({
+                                            download: e.target.value,
+                                        })
+                                    }
+                                />
+                            </EditCell>
+                        )}
+                        {this.state.errors && this.state.errors.upload ? (
+                            <ErrorCell data-header="Upload">
+                                <Error>Invalid</Error>
+                                <CellInput
+                                    data-name="upload"
+                                    type="number"
+                                    min="0"
+                                    max="1000"
+                                    step="0.01"
+                                    value={this.state.upload}
+                                    onChange={e =>
+                                        this.setState({
+                                            upload: e.target.value,
+                                        })
+                                    }
+                                />
+                            </ErrorCell>
+                        ) : (
+                            <EditCell data-header="Upload">
+                                <CellInput
+                                    data-name="upload"
+                                    type="number"
+                                    min="0"
+                                    max="1000"
+                                    step="0.01"
+                                    value={this.state.upload}
+                                    onChange={e =>
+                                        this.setState({
+                                            upload: e.target.value,
+                                        })
+                                    }
+                                />
+                            </EditCell>
+                        )}
+                        {this.state.errors && this.state.errors.ping ? (
+                            <ErrorCell data-header="Ping">
+                                <Error>Invalid</Error>
+                                <CellInput
+                                    data-name="ping"
+                                    type={"number"}
+                                    min="0"
+                                    max="1000"
+                                    step="0.01"
+                                    value={this.state.ping}
+                                    onChange={e =>
+                                        this.setState({ ping: e.target.value })
+                                    }
+                                />
+                            </ErrorCell>
+                        ) : (
+                            <EditCell data-header="Ping">
+                                <CellInput
+                                    data-name="ping"
+                                    type={"number"}
+                                    min="0"
+                                    max="1000"
+                                    step="0.01"
+                                    value={this.state.ping}
+                                    onChange={e =>
+                                        this.setState({ ping: e.target.value })
+                                    }
+                                />
+                            </EditCell>
+                        )}
+                        <SaveContainer>
                             <button
-                                className={
-                                    "table-save button is-small is-success"
-                                }
+                                className={"button is-small is-success"}
                                 onClick={this.checkValidation}
                             >
                                 Save
                             </button>
-                        </div>
-                    </form>
+                        </SaveContainer>
+                    </Form>
                 )}
-            </div>
+            </Row>
         )
     }
 }

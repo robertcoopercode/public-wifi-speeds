@@ -2,6 +2,7 @@ import React, { Component } from "react"
 import { connect } from "react-redux"
 import { bindActionCreators } from "redux"
 import * as firebase from "firebase"
+import styled from "styled-components"
 
 import { roundDecimals, capitalize } from "../utils"
 import { loadEntries, sortEntries } from "../actions"
@@ -11,7 +12,6 @@ import EntriesTable from "../components/EntriesTable"
 import PageHeader from "../components/PageHeader"
 import EntriesHeader from "../components/EntriesHeader"
 import AddEntryFormModal from "../components/AddEntryFormModal"
-import StatisticsModal from "../components/StatisticsModal"
 import EntryNoteModal from "../components/EntryNoteModal"
 import HomeContent from "../components/HomeContent"
 
@@ -22,7 +22,6 @@ class HomePage extends Component {
             entries: [],
             showForm: false,
             showNote: false,
-            showStats: false,
             showDropdown: false,
         }
     }
@@ -235,14 +234,22 @@ class HomePage extends Component {
     }
 
     render() {
+        // TODO: Move this out into a presentational component
+        const Home = styled.div`
+            color: #ffffff;
+            width: 1200px;
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 0 20px 40px;
+        `
+
         return (
-            <div className="home">
+            <Home>
                 <PageHeader signout={this.signout} />
                 <HomeContent />
                 <EntriesHeader
                     selectedCity={this.props.city.selectedCity}
                     showEntryForm={() => this.setState({ showForm: true })}
-                    showStats={() => this.setState({ showStats: true })}
                     sort={this.props.sort}
                     handleMobileSort={this.handleMobileSort}
                 />
@@ -264,17 +271,12 @@ class HomePage extends Component {
                     sanitizeInputs={this.sanitizeInputs}
                     validateInputs={this.validateInputs}
                 />
-                <StatisticsModal
-                    showStats={this.state.showStats}
-                    hideModal={() => this.setState({ showStats: false })}
-                    entries={this.props.entries}
-                />
                 <EntryNoteModal
                     showNote={this.state.showNote}
                     hideModal={() => this.setState({ showNote: false })}
                     note={this.state.note}
                 />
-            </div>
+            </Home>
         )
     }
 }

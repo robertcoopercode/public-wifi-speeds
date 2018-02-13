@@ -41,8 +41,7 @@ class CitySelection extends Component {
         return (
             <div
                 className={
-                    "dropdown dropdown--city" +
-                    (this.state.showDropdown ? " is-active" : "")
+                    "dropdown" + (this.state.showDropdown ? " is-active" : "")
                 }
                 ref={this.setDropdownRef}
             >
