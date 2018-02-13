@@ -490,6 +490,19 @@ class Entry extends Component {
                         {this.state.errors && this.state.errors.upload ? (
                             <ErrorCell data-header="Upload">
                                 <Error>Invalid</Error>
+                                <CellInput
+                                    data-name="upload"
+                                    type="number"
+                                    min="0"
+                                    max="1000"
+                                    step="0.01"
+                                    value={this.state.upload}
+                                    onChange={e =>
+                                        this.setState({
+                                            upload: e.target.value,
+                                        })
+                                    }
+                                />
                             </ErrorCell>
                         ) : (
                             <EditCell data-header="Upload">
@@ -511,6 +524,17 @@ class Entry extends Component {
                         {this.state.errors && this.state.errors.ping ? (
                             <ErrorCell data-header="Ping">
                                 <Error>Invalid</Error>
+                                <CellInput
+                                    data-name="ping"
+                                    type={"number"}
+                                    min="0"
+                                    max="1000"
+                                    step="0.01"
+                                    value={this.state.ping}
+                                    onChange={e =>
+                                        this.setState({ ping: e.target.value })
+                                    }
+                                />
                             </ErrorCell>
                         ) : (
                             <EditCell data-header="Ping">
