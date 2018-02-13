@@ -1,5 +1,4 @@
-import React, { Component } from "react"
-import PropTypes from "prop-types"
+import React from "react"
 import Stats from "./Stats"
 
 function StatisticsModal(props) {
@@ -21,8 +20,5 @@ function StatisticsModal(props) {
         </div>
     )
 }
-
-StatisticsModal.propTypes = {}
-StatisticsModal.defaultProps = {}
 
 export default StatisticsModal

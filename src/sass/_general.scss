@@ -37,3 +37,26 @@ input[type=number]::-webkit-outer-spin-button {
   flex-direction: column;
   min-height: 100vh;
 }
+
+.autocomplete {
+  width: 100%;
+}
+
+.autocomplete-table-input {
+  background: none;
+  border: none !important;
+  padding: 0.5em;
+  font-size: 1rem;
+  width: 100%;
+  height: 100%;
+}
+
+.autocomplete-results,
+.add-entry-form__autocomplete-results {
+  position: absolute;
+  left: 0;
+  margin-top: 4px;
+  width: 100%;
+  z-index: 2;
+  box-shadow: 0 2px 3px rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.1);
+}

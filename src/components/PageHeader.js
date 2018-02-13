@@ -1,5 +1,4 @@
-import React, { Component } from "react"
-import PropTypes from "prop-types"
+import React from "react"
 import styled from "styled-components"
 
 import CitySelection from "./CitySelection"
@@ -19,8 +18,5 @@ function PageHeader(props) {
         </Header>
     )
 }
-
-PageHeader.propTypes = {}
-PageHeader.defaultProps = {}
 
 export default PageHeader

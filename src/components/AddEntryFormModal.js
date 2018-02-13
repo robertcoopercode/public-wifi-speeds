@@ -1,5 +1,4 @@
-import React, { Component } from "react"
-import PropTypes from "prop-types"
+import React from "react"
 
 import AddEntryForm from "./AddEntryForm"
 
@@ -35,8 +34,5 @@ function AddEntryFormModal(props) {
         </div>
     )
 }
-
-AddEntryFormModal.propTypes = {}
-AddEntryFormModal.defaultProps = {}
 
 export default AddEntryFormModal
