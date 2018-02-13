@@ -7,6 +7,7 @@ import PropTypes from "prop-types"
 import * as firebase from "firebase"
 import PlacesAutocomplete from "react-places-autocomplete"
 import { bindActionCreators } from "redux"
+import styled from "styled-components"
 import { connect } from "react-redux"
 import { addEntry } from "../actions"
 
@@ -24,6 +25,12 @@ const mapDispatchToProps = function(dispatch) {
         dispatch,
     )
 }
+const NumericalGroup = styled.div`
+    display: flex;
+`
+const NumericalField = styled.div`
+    flex: 1;
+`
 
 class AddEntryForm extends Component {
     constructor(props) {
@@ -177,8 +184,8 @@ class AddEntryForm extends Component {
                         </p>
                     ) : null}
                 </div>
-                <div className="form__number-group field is-grouped is-grouped-centered is-grouped-multiline">
-                    <div className="control form__number-input">
+                <NumericalGroup className="field is-grouped is-grouped-centered is-grouped-multiline">
+                    <NumericalField className="control">
                         <label className="label">Download (Mbps)</label>
                         <input
                             className={
@@ -203,8 +210,8 @@ class AddEntryForm extends Component {
                                 {this.state.errors.download}
                             </p>
                         ) : null}
-                    </div>
-                    <div className="control form__number-input">
+                    </NumericalField>
+                    <NumericalField className="control form__number-input">
                         <label className="label">Upload (Mbps)</label>
                         <input
                             className={
@@ -229,8 +236,8 @@ class AddEntryForm extends Component {
                                 {this.state.errors.upload}
                             </p>
                         ) : null}
-                    </div>
-                    <div className="control form__number-input">
+                    </NumericalField>
+                    <NumericalField className="control form__number-input">
                         <label className="label">Ping (ms)</label>
                         <input
                             className={
@@ -255,8 +262,8 @@ class AddEntryForm extends Component {
                                 {this.state.errors.ping}
                             </p>
                         ) : null}
-                    </div>
-                </div>
+                    </NumericalField>
+                </NumericalGroup>
                 <div className="field">
                     <label className="label">Note</label>
                     <div className="control">
