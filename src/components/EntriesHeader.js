@@ -50,9 +50,6 @@ function EntriesHeader(props) {
             &:first-child {
               margin-left: 0;
             };
-            &:nth-child(2) {
-              margin-right: 0;
-            };
         `};
     `
 
@@ -65,9 +62,6 @@ function EntriesHeader(props) {
                     onClick={props.showEntryForm}
                 >
                     Add New Entry
-                </Button>
-                <Button className={"button is-info"} onClick={props.showStats}>
-                    Overall Stats
                 </Button>
                 {/* TODO: Add a conditional that only renders this on mobile/small screen widths */}
                 <MobileSort

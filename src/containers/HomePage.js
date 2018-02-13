@@ -12,7 +12,6 @@ import EntriesTable from "../components/EntriesTable"
 import PageHeader from "../components/PageHeader"
 import EntriesHeader from "../components/EntriesHeader"
 import AddEntryFormModal from "../components/AddEntryFormModal"
-import StatisticsModal from "../components/StatisticsModal"
 import EntryNoteModal from "../components/EntryNoteModal"
 import HomeContent from "../components/HomeContent"
 
@@ -23,7 +22,6 @@ class HomePage extends Component {
             entries: [],
             showForm: false,
             showNote: false,
-            showStats: false,
             showDropdown: false,
         }
     }
@@ -252,7 +250,6 @@ class HomePage extends Component {
                 <EntriesHeader
                     selectedCity={this.props.city.selectedCity}
                     showEntryForm={() => this.setState({ showForm: true })}
-                    showStats={() => this.setState({ showStats: true })}
                     sort={this.props.sort}
                     handleMobileSort={this.handleMobileSort}
                 />
@@ -273,11 +270,6 @@ class HomePage extends Component {
                     coordinates={this.props.city.coordinates}
                     sanitizeInputs={this.sanitizeInputs}
                     validateInputs={this.validateInputs}
-                />
-                <StatisticsModal
-                    showStats={this.state.showStats}
-                    hideModal={() => this.setState({ showStats: false })}
-                    entries={this.props.entries}
                 />
                 <EntryNoteModal
                     showNote={this.state.showNote}
