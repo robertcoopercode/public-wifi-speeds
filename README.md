@@ -8,7 +8,7 @@ In the root project directory, install all the project dependencies:
 
 #### `yarn install`
 
-Next, you will need to rename the `.env.example` file to `.env` to have access to the required environment varibles. The environment variables allow the application to work with Firebase as well as use the Google Places API.
+Next, you will need to rename the `.env.example` file to `.env` to have access to the required environment variables. The environment variables allow the application to work with Firebase as well as use the Google Places API.
  
 Once that is complete, start the development server:
 
