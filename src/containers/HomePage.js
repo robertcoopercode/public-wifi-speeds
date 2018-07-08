@@ -1,13 +1,14 @@
-import React, { Component } from "react"
-import { connect } from "react-redux"
-import { bindActionCreators } from "redux"
 import * as firebase from "firebase"
+import PropTypes from "prop-types"
+import React, { Component } from "react"
 import styled from "styled-components"
+import { bindActionCreators } from "redux"
+import { connect } from "react-redux"
+import { withRouter } from "react-router-dom"
 
 import { roundDecimals, capitalize } from "../utils"
 import { loadEntries, sortEntries } from "../actions"
 
-import withAuthorization from "./withAuthorization"
 import EntriesTable from "../components/EntriesTable"
 import PageHeader from "../components/PageHeader"
 import EntriesHeader from "../components/EntriesHeader"
@@ -233,8 +234,13 @@ class HomePage extends Component {
         this.fetchEnries(field, direction)
     }
 
+    handleShowEntryForm = () => {
+        this.props.user
+            ? this.setState({ showForm: true })
+            : this.props.history.push("/login")
+    }
+
     render() {
-        // TODO: Move this out into a presentational component
         const Home = styled.div`
             color: #ffffff;
             width: 1200px;
@@ -245,11 +251,11 @@ class HomePage extends Component {
 
         return (
             <Home>
-                <PageHeader signout={this.signout} />
+                <PageHeader signout={this.signout} authUser={this.props.user} />
                 <HomeContent />
                 <EntriesHeader
                     selectedCity={this.props.city.selectedCity}
-                    showEntryForm={() => this.setState({ showForm: true })}
+                    showEntryForm={this.handleShowEntryForm}
                     sort={this.props.sort}
                     handleMobileSort={this.handleMobileSort}
                 />
@@ -281,11 +287,22 @@ class HomePage extends Component {
     }
 }
 
+HomePage.propTypes = {
+    city: PropTypes.object,
+    entries: PropTypes.array,
+    handleSort: PropTypes.func,
+    loadEntries: PropTypes.func,
+    location: PropTypes.object,
+    sort: PropTypes.object,
+    user: PropTypes.object,
+}
+
 const mapStateToProps = function(state) {
     return {
         city: state.city,
         sort: state.sort,
         entries: state.entries,
+        user: state.user,
     }
 }
 
@@ -299,8 +316,6 @@ const mapDispatchToProps = function(dispatch) {
     )
 }
 
-const authCondition = authUser => !!authUser
-
 const ConnectedHomePage = connect(mapStateToProps, mapDispatchToProps)(HomePage)
 
-export default withAuthorization(authCondition)(ConnectedHomePage)
+export default withRouter(ConnectedHomePage)

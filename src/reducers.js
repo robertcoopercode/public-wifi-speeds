@@ -1,5 +1,11 @@
 import { combineReducers } from "redux"
-import { LOAD_ENTRIES, ADD_ENTRY, SELECT_CITY, SORT_ENTRIES } from "./actions"
+import {
+    LOAD_ENTRIES,
+    ADD_ENTRY,
+    SELECT_CITY,
+    SORT_ENTRIES,
+    SET_USER,
+} from "./actions"
 
 function entries(state = [], action) {
     switch (action.type) {
@@ -51,10 +57,20 @@ function sort(state = { currentOrder: {}, lastSorted: "location" }, action) {
     }
 }
 
+function user(state = null, action) {
+    switch (action.type) {
+        case SET_USER:
+            return action.user
+        default:
+            return state
+    }
+}
+
 const appReducers = combineReducers({
     entries,
     city,
     sort,
+    user,
 })
 
 export default appReducers

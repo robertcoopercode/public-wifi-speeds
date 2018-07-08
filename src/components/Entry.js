@@ -4,9 +4,10 @@
 import React, { Component, Fragment } from "react"
 import moment from "moment"
 import * as firebase from "firebase"
-import PropTypes from "prop-types"
 import PlacesAutocomplete from "react-places-autocomplete"
 import styled from "styled-components"
+import { selectUser } from "../actions"
+import { connect } from "react-redux"
 
 import { colors, media } from "../constants"
 
@@ -258,7 +259,7 @@ class Entry extends Component {
                         this.state.upload,
                         this.state.ping,
                         this.state.note,
-                        this.context.authUser.uid,
+                        this.props.user.uid,
                     ),
                 )
             this.setState({ editEntry: false, errors: null })
@@ -279,6 +280,10 @@ class Entry extends Component {
     }
 
     render() {
+        const currentUser =
+            this.props.user &&
+            (this.props.user.uid === this.props.entry.uid ||
+                this.props.user.admin)
         return (
             <Row>
                 {!this.state.editEntry ? (
@@ -318,8 +323,7 @@ class Entry extends Component {
                         >
                             {this.state.showOverlay &&
                             (this.props.entry.note.length > 0 ||
-                                this.context.authUser.uid ===
-                                    this.props.entry.uid) ? (
+                                currentUser) ? (
                                 <Overlay
                                     onMouseLeave={() =>
                                         this.setState({ showOverlay: false })
@@ -339,8 +343,7 @@ class Entry extends Component {
                                             Note
                                         </Button>
                                     ) : null}
-                                    {this.context.authUser.uid ===
-                                    this.props.entry.uid ? (
+                                    {currentUser ? (
                                         <Fragment>
                                             <Button
                                                 className="button is-small is-primary"
@@ -371,10 +374,7 @@ class Entry extends Component {
                             {this.props.entry.note.length > 0 ? (
                                 <NoteIndicator />
                             ) : null}
-                            {this.context.authUser.uid ===
-                            this.props.entry.uid ? (
-                                <UserEntryIndicator />
-                            ) : null}
+                            {currentUser ? <UserEntryIndicator /> : null}
                         </Indicators>
                     </Fragment>
                 ) : (
@@ -566,8 +566,10 @@ class Entry extends Component {
     }
 }
 
-Entry.contextTypes = {
-    authUser: PropTypes.object,
+const mapStateToProps = function(state) {
+    return {
+        user: state.user,
+    }
 }
 
-export default Entry
+export default connect(mapStateToProps, null)(Entry)

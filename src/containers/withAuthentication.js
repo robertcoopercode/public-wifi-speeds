@@ -1,6 +1,12 @@
-import React from "react"
 import * as firebase from "firebase"
 import PropTypes from "prop-types"
+import React from "react"
+import { bindActionCreators } from "redux"
+import { connect } from "react-redux"
+
+import { setUser } from "../actions"
+
+export const AuthContext = React.createContext(null)
 
 const withAuthentication = Component => {
     class WithAuthentication extends React.Component {
@@ -11,29 +17,45 @@ const withAuthentication = Component => {
             }
         }
 
-        getChildContext() {
-            return {
-                authUser: this.state.authUser,
-            }
-        }
-
         componentDidMount() {
             firebase.auth().onAuthStateChanged(authUser => {
-                authUser
-                    ? this.setState(() => ({ authUser }))
-                    : this.setState(() => ({ authUser: null }))
+                if (authUser) {
+                    this.setState(() => ({ authUser }))
+                    firebase
+                        .database()
+                        .ref("users/" + authUser.uid)
+                        .once("value")
+                        .then(snapshot => {
+                            this.props.setUser(snapshot.val())
+                        })
+                } else {
+                    this.setState(() => ({ authUser: null }))
+                }
             })
         }
         render() {
-            return <Component />
+            return (
+                <AuthContext.Provider value={this.state.authUser}>
+                    <Component />
+                </AuthContext.Provider>
+            )
         }
     }
 
-    WithAuthentication.childContextTypes = {
-        authUser: PropTypes.object,
+    withAuthentication.propTypes = {
+        setUser: PropTypes.func,
     }
 
-    return WithAuthentication
+    const mapDispatchToProps = function(dispatch) {
+        return bindActionCreators(
+            {
+                setUser: setUser,
+            },
+            dispatch,
+        )
+    }
+
+    return connect(null, mapDispatchToProps)(WithAuthentication)
 }
 
 export default withAuthentication

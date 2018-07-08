@@ -6,6 +6,7 @@ export const LOAD_ENTRIES = "LOAD_ENTRIES"
 export const ADD_ENTRY = "ADD_ENTRY"
 export const SELECT_CITY = "SELECT_CITY"
 export const SORT_ENTRIES = "SORT_ENTRIES"
+export const SET_USER = "SET_USER"
 
 /*
  * other constants
@@ -48,5 +49,12 @@ export function sortEntries(field, order) {
         type: SORT_ENTRIES,
         field,
         order,
+    }
+}
+
+export function setUser(user) {
+    return {
+        type: SET_USER,
+        user,
     }
 }

@@ -2,11 +2,16 @@ import React, { Component, Fragment } from "react"
 import {
     FacebookLoginButton,
     GoogleLoginButton,
-    TwitterLoginButton,
     GithubLoginButton,
 } from "react-social-login-buttons"
 import * as firebase from "firebase"
+import PropTypes from "prop-types"
 import styled from "styled-components"
+import { withRouter } from "react-router-dom"
+import { bindActionCreators } from "redux"
+import { connect } from "react-redux"
+
+import { setUser } from "../actions"
 
 const Login = styled.div`
     align-self: center;
@@ -56,15 +61,39 @@ class LoginPage extends Component {
         document.title = "Wifi Speeds - Login"
     }
 
+    saveUser = user => {
+        firebase
+            .database()
+            .ref("users/" + user.uid)
+            .once("value")
+            .then(snapshot => {
+                const currentUser = {
+                    name: user.displayName,
+                    email: user.email,
+                    photoURL: user.photoURL,
+                    admin: false,
+                }
+
+                // Set a new user in the database if the user doesn't already exist
+                if (!snapshot.val()) {
+                    firebase
+                        .database()
+                        .ref("users/" + user.uid)
+                        .set(currentUser)
+                }
+
+                // Set the redux state with the current value found in the database
+                this.props.setUser(snapshot.val())
+            })
+    }
+
     signin = providerName => {
         const provider = new firebase.auth[providerName + "AuthProvider"]()
         firebase
             .auth()
             .signInWithPopup(provider)
             .then(result => {
-                this.setState({
-                    user: result.user,
-                })
+                this.saveUser(result.user)
                 this.props.history.push("/")
             })
             .catch(error => {
@@ -189,14 +218,6 @@ class LoginPage extends Component {
                         }}
                         onClick={() => this.signin("Google")}
                     />
-                    <TwitterLoginButton
-                        style={{
-                            boxShadow: "none",
-                            marginBottom: "10px",
-                            width: "300px",
-                        }}
-                        onClick={() => this.signin("Twitter")}
-                    />
                     <GithubLoginButton
                         style={{
                             boxShadow: "none",
@@ -206,10 +227,29 @@ class LoginPage extends Component {
                         onClick={() => this.signin("Github")}
                     />
                 </AuthenticationButtons>
-                <CoffeeImage src="/coffee.png" alt="steaming coffee" />
+                <p style={{ color: "#fff", marginTop: "0" }}>OR</p>
+                <button
+                    className="button  is-info"
+                    onClick={() => this.props.history.push("/")}
+                >
+                    Go Home
+                </button>
             </Login>
         )
     }
 }
 
-export default LoginPage
+LoginPage.propTypes = {
+    setUser: PropTypes.func,
+}
+
+const mapDispatchToProps = function(dispatch) {
+    return bindActionCreators(
+        {
+            setUser: setUser,
+        },
+        dispatch,
+    )
+}
+
+export default withRouter(connect(null, mapDispatchToProps)(LoginPage))

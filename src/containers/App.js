@@ -1,23 +1,53 @@
+import * as firebase from "firebase"
 import React, { Fragment } from "react"
 import "bulma/css/bulma.css"
+import { Route } from "react-router-dom"
+import { bindActionCreators } from "redux"
+import { connect } from "react-redux"
+import { withRouter } from "react-router-dom"
+
 import "../App.css"
-import withAuthentication from "./withAuthentication"
 import HomePage from "./HomePage"
 import LoginPage from "./LoginPage"
-import { Route } from "react-router-dom"
-import PropTypes from "prop-types"
+import { setUser } from "../actions"
 
-function App() {
-    return (
-        <Fragment>
-            <Route exact path="/" render={() => <HomePage />} />
-            <Route path="/login" component={LoginPage} />
-        </Fragment>
+class App extends React.Component {
+    componentDidMount() {
+        firebase.auth().onAuthStateChanged(authUser => {
+            if (authUser) {
+                firebase
+                    .database()
+                    .ref("users/" + authUser.uid)
+                    .once("value")
+                    .then(snapshot => {
+                        this.props.setUser(snapshot.val())
+                    })
+            }
+            this.props.setUser(null)
+        })
+    }
+    render() {
+        return (
+            <Fragment>
+                <Route
+                    exact
+                    path="/"
+                    // render={() => <HomePage authUser={authUser} />}
+                    render={() => <HomePage />}
+                />
+                <Route path="/login" component={LoginPage} />
+            </Fragment>
+        )
+    }
+}
+
+const mapDispatchToProps = function(dispatch) {
+    return bindActionCreators(
+        {
+            setUser: setUser,
+        },
+        dispatch,
     )
 }
 
-App.contextTypes = {
-    authUser: PropTypes.object,
-}
-
-export default withAuthentication(App)
+export default withRouter(connect(null, mapDispatchToProps)(App))

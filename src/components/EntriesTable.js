@@ -198,7 +198,6 @@ function EntriesTable(props) {
                 return (
                     <Entry
                         entry={entry}
-                        key={entry.id}
                         city={props.city}
                         showNote={props.showNote}
                         sanitizeInputs={props.sanitizeInputs}
