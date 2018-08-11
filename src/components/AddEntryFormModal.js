@@ -22,6 +22,7 @@ function AddEntryFormModal(props) {
                             cityCoordinates={props.coordinates}
                             sanitizeInputs={props.sanitizeInputs}
                             validateInputs={props.validateInputs}
+                            user={props.user}
                         />
                     </div>
                 </article>

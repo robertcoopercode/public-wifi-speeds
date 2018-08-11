@@ -108,25 +108,17 @@ class HomePage extends Component {
     }
 
     // Function that sanitizes values before they are stored to the database
-    sanitizeInputs = (
-        location,
-        date,
-        timestamp,
-        download,
-        upload,
-        ping,
-        note,
-        uid,
-    ) => {
+    sanitizeInputs = (entry) => {
         return {
-            location: location,
-            date: date,
-            timestamp: timestamp,
-            download: roundDecimals(download, 2),
-            upload: roundDecimals(upload, 2),
-            ping: roundDecimals(ping, 2),
-            note: note.trim(),
-            uid: uid,
+            location: entry.location,
+            date: entry.date,
+            id: entry.id,
+            timestamp: entry.timestamp,
+            download: roundDecimals(entry.download, 2),
+            upload: roundDecimals(entry.upload, 2),
+            ping: roundDecimals(entry.ping, 2),
+            note: entry.note.trim(),
+            uid: entry.uid,
         }
     }
 
@@ -276,6 +268,7 @@ class HomePage extends Component {
                     coordinates={this.props.city.coordinates}
                     sanitizeInputs={this.sanitizeInputs}
                     validateInputs={this.validateInputs}
+                    user={this.props.user}
                 />
                 <EntryNoteModal
                     showNote={this.state.showNote}

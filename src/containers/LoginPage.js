@@ -72,6 +72,7 @@ class LoginPage extends Component {
                     email: user.email,
                     photoURL: user.photoURL,
                     admin: false,
+                    uid: user.uid,
                 }
 
                 // Set a new user in the database if the user doesn't already exist

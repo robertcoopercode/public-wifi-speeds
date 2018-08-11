@@ -197,6 +197,7 @@ function EntriesTable(props) {
             {props.entries.map((entry, index) => {
                 return (
                     <Entry
+                        key={entry.id}
                         entry={entry}
                         city={props.city}
                         showNote={props.showNote}

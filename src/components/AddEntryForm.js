@@ -25,6 +25,7 @@ const mapDispatchToProps = function(dispatch) {
         dispatch,
     )
 }
+
 const NumericalGroup = styled.div`
     display: flex;
 `
@@ -91,21 +92,23 @@ class AddEntryForm extends Component {
             this.state.note,
         )
         if (Object.keys(errors).length === 0) {
-            const sanitizedInputs = this.props.sanitizeInputs(
-                this.state.location,
-                this.getCurrentDate(),
-                Date.now(),
-                this.state.download,
-                this.state.upload,
-                this.state.ping,
-                this.state.note,
-                this.context.authUser.uid,
-            )
-            firebase
+            const databaseRef = firebase
                 .database()
-                .ref()
-                .child("/entries/" + this.props.city)
+                .ref("/entries/" + this.props.city)
                 .push(sanitizedInputs)
+
+            const sanitizedInputs = this.props.sanitizeInputs({
+                location: this.state.location,
+                date: this.getCurrentDate(),
+                id: databaseRef.getKey(),
+                timestamp: Date.now(),
+                download: this.state.download,
+                upload: this.state.upload,
+                ping: this.state.ping,
+                note: this.state.note,
+                uid: this.props.user.uid,
+            })
+
             this.setState(this.INITIAL_STATE)
             // Set Redux Store
             this.props.addEntry(sanitizedInputs)
@@ -305,10 +308,6 @@ class AddEntryForm extends Component {
             </form>
         )
     }
-}
-
-AddEntryForm.contextTypes = {
-    authUser: PropTypes.object,
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(AddEntryForm)

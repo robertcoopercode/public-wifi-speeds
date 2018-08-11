@@ -10,6 +10,7 @@ import { selectUser } from "../actions"
 import { connect } from "react-redux"
 
 import { colors, media } from "../constants"
+import { roundDecimals } from "../utils"
 
 const Row = styled.div`
     position: relative;
@@ -251,16 +252,17 @@ class Entry extends Component {
                 .ref("/entries/" + this.props.city + "/" + id)
                 .update(
                     // Returns object
-                    this.props.sanitizeInputs(
-                        this.state.location,
-                        this.getCurrentDate(),
-                        Date.now(),
-                        this.state.download,
-                        this.state.upload,
-                        this.state.ping,
-                        this.state.note,
-                        this.props.user.uid,
-                    ),
+                    this.props.sanitizeInputs({
+                        location: this.state.location,
+                        date: this.getCurrentDate(),
+                        id,
+                        timestamp: Date.now(),
+                        download: this.state.download,
+                        upload: this.state.upload,
+                        ping: this.state.ping,
+                        note: this.state.note,
+                        uid: this.props.user.uid,
+                    }),
                 )
             this.setState({ editEntry: false, errors: null })
         } else {
